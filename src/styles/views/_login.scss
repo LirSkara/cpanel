@@ -1,0 +1,586 @@
+// ==========================================
+// QRes OS 4 - Стили страницы входа (Красная схема)
+// ==========================================
+
+@use '../variables';
+
+.login-page {
+  height: 100vh;
+  position: relative;
+}
+
+// === ФОНОВАЯ СЕКЦИЯ ===
+.background-section {
+  width: 100%;
+  height: 100vh;
+  background: var(--qres-gradient-primary);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+  }
+}
+
+// === БРЕНДИНГ ===
+.qres-login-brand-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  color: white;
+  text-align: center;
+  margin-right: 3rem;
+
+  @include variables.qres-responsive(lg) {
+    display: block;
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.qres-login-brand-header {
+  margin-bottom: 3rem;
+}
+
+.qres-login-brand-logo {
+  font-size: 5rem;
+  text-align: center;
+  color: white;
+}
+
+.qres-login-brand-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.qres-login-brand-subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.qres-login-brand-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+// === ОСОБЕННОСТИ ===
+.qres-login-brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.qres-login-feature-item {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 1rem;
+  @include variables.qres-glass-effect(0.1);
+  border-radius: var(--qres-radius-md);
+  backdrop-filter: blur(10px);
+}
+
+.qres-login-feature-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--qres-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+
+  i {
+    font-size: 1.5rem;
+    color: #ffd700;
+  }
+}
+
+.qres-login-feature-text {
+  h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.qres-login-brand-footer {
+  .qres-login-version-info {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+}
+
+// === ИНДИКАТОР СОЕДИНЕНИЯ ===
+.connection-status {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--qres-shadow-lg);
+  z-index: var(--qres-z-toast);
+  transition: all var(--qres-transition-normal);
+  cursor: pointer;
+  backdrop-filter: blur(15px);
+
+  &:hover {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: var(--qres-shadow-xl);
+    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  &.connected {
+    color: var(--qres-success);
+    border-color: var(--qres-success);
+
+    i {
+      color: var(--qres-success);
+      font-size: 1.1em;
+      @include variables.qres-pulse-animation(var(--qres-success));
+    }
+  }
+
+  &.disconnected {
+    color: var(--qres-danger);
+    border-color: var(--qres-danger);
+    animation: shake 0.6s ease-in-out, glow-red 2s ease-in-out infinite;
+
+    i {
+      color: var(--qres-danger);
+      font-size: 1.1em;
+      @include variables.qres-pulse-animation(var(--qres-danger));
+    }
+  }
+
+  span {
+    white-space: nowrap;
+    text-shadow: none;
+    color: inherit;
+  }
+
+  @media (max-width: 768px) {
+    top: 15px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    min-width: 180px;
+    border-radius: 25px;
+  }
+
+  @media (max-width: 480px) {
+    top: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    min-width: 160px;
+    border-radius: 20px;
+
+    span {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    top: 10px;
+    right: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+}
+
+// === ФОРМА ВХОДА ===
+.login-form-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 450px;
+  @include variables.qres-glass-effect();
+  border-radius: var(--qres-radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--qres-shadow-xl);
+  backdrop-filter: blur(10px);
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin: 1rem;
+    padding: 2rem;
+    border-radius: var(--qres-radius-lg);
+  }
+}
+
+// === ЗАГОЛОВОК ФОРМЫ ===
+.login-form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--qres-gray-200);
+}
+
+.login-form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--qres-gray-800);
+  margin-bottom: 0.5rem;
+}
+
+.login-form-subtitle {
+  font-size: 0.9rem;
+  color: var(--qres-gray-500);
+  margin: 0;
+  line-height: 1.5;
+}
+
+// === ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ ===
+.login-mode-switcher {
+  display: flex;
+  background: var(--qres-light);
+  border-radius: var(--qres-radius-md);
+  padding: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.mode-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--qres-gray-500);
+  font-weight: 500;
+  border-radius: var(--qres-radius-sm);
+  transition: all var(--qres-transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+
+  &.active {
+    background: var(--qres-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  }
+
+  &:hover:not(.active) {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--qres-primary);
+  }
+}
+
+// === ФОРМЫ ===
+.forms-container {
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  .qres-form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .qres-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--qres-gray-700);
+  }
+
+  .qres-form-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .qres-input-icon {
+    position: absolute;
+    left: 1rem;
+    z-index: 1;
+    color: var(--qres-gray-400);
+  }
+
+  .qres-form-control {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid var(--qres-gray-200);
+    border-radius: var(--qres-radius-md);
+    font-size: 1rem;
+    background: var(--qres-white);
+    transition: all var(--qres-transition-normal);
+
+    &:focus {
+      outline: none;
+      border-color: var(--qres-primary);
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    &::placeholder {
+      color: var(--qres-gray-400);
+    }
+  }
+
+  .qres-form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--qres-gray-400);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--qres-radius-sm);
+    transition: all var(--qres-transition-fast);
+
+    &:hover {
+      color: var(--qres-primary);
+      background: rgba(220, 53, 69, 0.1);
+    }
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: var(--qres-primary);
+    color: white;
+    border: none;
+    border-radius: var(--qres-radius-md);
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--qres-transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:hover:not(:disabled) {
+      background: var(--qres-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  }
+}
+
+// === PIN КЛАВИАТУРА ===
+.pin-display {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pin-digit {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--qres-gray-300);
+  border-radius: var(--qres-radius-full);
+  background: var(--qres-white);
+  transition: all var(--qres-transition-normal);
+
+  &.filled {
+    background: var(--qres-primary);
+    border-color: var(--qres-primary);
+  }
+}
+
+.pin-keyboard {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.keyboard-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.keyboard-btn {
+  padding: 1rem;
+  border: 2px solid var(--qres-gray-200);
+  background: var(--qres-white);
+  border-radius: var(--qres-radius-md);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--qres-transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--qres-light);
+    border-color: var(--qres-primary);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.special {
+    background: var(--qres-gray-100);
+    
+    &:hover {
+      background: var(--qres-gray-200);
+    }
+    
+    &.danger {
+      background: var(--qres-danger);
+      color: white;
+      border-color: var(--qres-danger);
+      
+      &:hover {
+        background: var(--qres-danger-light);
+      }
+    }
+  }
+}
+
+// === СООБЩЕНИЯ ===
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--qres-danger);
+  background: rgba(220, 53, 69, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: var(--qres-radius-md);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+
+  i {
+    color: var(--qres-danger);
+  }
+}
+
+.debug-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: var(--qres-gray-100);
+  border-radius: var(--qres-radius-sm);
+  border: 1px solid var(--qres-gray-200);
+  
+  .text-muted {
+    color: var(--qres-gray-500);
+    font-size: 0.85rem;
+  }
+}
+
+// === АДАПТИВНОСТЬ ===
+@media (max-width: 1024px) {
+  .qres-login-brand-content {
+    display: none;
+  }
+  
+  .background-section {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-form-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .pin-keyboard {
+    max-width: 250px;
+  }
+  
+  .keyboard-btn {
+    padding: 0.75rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form-card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .qres-login-brand-title {
+    font-size: 2.5rem;
+  }
+  
+  .qres-login-brand-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .pin-keyboard {
+    max-width: 200px;
+  }
+  
+  .keyboard-btn {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+}

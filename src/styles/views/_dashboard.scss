@@ -1,0 +1,508 @@
+// ==========================================
+// QRes OS 4 - Стили страницы Dashboard (Красная схема)
+// ==========================================
+
+@use '../variables';
+
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--qres-gradient-primary);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+  }
+}
+
+// === ЗАГОЛОВОК ===
+.dashboard-header {
+  @include variables.qres-glass-effect();
+  border-radius: var(--qres-radius-xl);
+  margin: 1rem;
+  padding: 2rem;
+  box-shadow: var(--qres-shadow-lg);
+  position: relative;
+  z-index: 2;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--qres-dark);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      background: var(--qres-gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2rem;
+    }
+  }
+
+  .dashboard-subtitle {
+    color: var(--qres-gray-600);
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--qres-radius-full);
+  background: var(--qres-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  
+  .user-name {
+    font-weight: 600;
+    color: var(--qres-gray-800);
+    font-size: 0.9rem;
+  }
+  
+  .user-role {
+    color: var(--qres-gray-500);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--qres-primary);
+  color: white;
+  border: none;
+  border-radius: var(--qres-radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--qres-transition-normal);
+
+  &:hover:not(:disabled) {
+    background: var(--qres-primary-dark);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// === ОСНОВНОЙ КОНТЕНТ ===
+.dashboard-main {
+  padding: 0 1rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 2rem;
+    background: var(--qres-gradient-primary);
+    border-radius: var(--qres-radius-sm);
+  }
+}
+
+// === БЫСТРЫЕ ДЕЙСТВИЯ ===
+.actions-section {
+  margin-bottom: 3rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  @include variables.qres-glass-effect();
+  border-radius: var(--qres-radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--qres-shadow-md);
+  transition: all var(--qres-transition-normal);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--qres-gradient-primary);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--qres-shadow-lg);
+  }
+
+  // Цветовые варианты
+  &.primary {
+    &::before { background: var(--qres-gradient-primary); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, var(--qres-primary), #ff6b6b);
+      color: white;
+    }
+    
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--qres-primary), #ff6b6b);
+      
+      &:hover {
+        background: linear-gradient(135deg, var(--qres-primary-dark), #ff5252);
+      }
+    }
+  }
+
+  &.success {
+    &::before { background: linear-gradient(135deg, #28a745, #20c997); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+    
+    .action-btn.success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      
+      &:hover {
+        background: linear-gradient(135deg, #1e7e34, #1a9075);
+      }
+    }
+  }
+
+  &.info {
+    &::before { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, #17a2b8, #6f42c1);
+      color: white;
+    }
+    
+    .action-btn.info {
+      background: linear-gradient(135deg, #17a2b8, #6f42c1);
+      
+      &:hover {
+        background: linear-gradient(135deg, #138496, #5a32a3);
+      }
+    }
+  }
+
+  &.warning {
+    &::before { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+      color: white;
+    }
+    
+    .action-btn.warning {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+      
+      &:hover {
+        background: linear-gradient(135deg, #d39e00, #dc6502);
+      }
+    }
+  }
+
+  &.danger {
+    &::before { background: linear-gradient(135deg, #dc3545, #e83e8c); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, #dc3545, #e83e8c);
+      color: white;
+    }
+    
+    .action-btn.danger {
+      background: linear-gradient(135deg, #dc3545, #e83e8c);
+      
+      &:hover {
+        background: linear-gradient(135deg, #c82333, #d91a72);
+      }
+    }
+  }
+
+  &.secondary {
+    &::before { background: linear-gradient(135deg, #6c757d, #495057); }
+    
+    .action-icon {
+      background: linear-gradient(135deg, #6c757d, #495057);
+      color: white;
+    }
+    
+    .action-btn.secondary {
+      background: linear-gradient(135deg, #6c757d, #495057);
+      
+      &:hover {
+        background: linear-gradient(135deg, #5a6268, #343a40);
+      }
+    }
+  }
+}
+
+.action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.action-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: var(--qres-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--qres-shadow-sm);
+}
+
+.action-badge {
+  .badge-count {
+    background: var(--qres-gray-800);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--qres-radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 1.5rem;
+    text-align: center;
+    display: inline-block;
+  }
+  
+  .badge-text {
+    background: linear-gradient(135deg, #ff6b6b, #ffc107);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--qres-radius-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--qres-shadow-sm);
+  }
+}
+
+.action-content {
+  margin-bottom: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--qres-gray-800);
+  margin: 0 0 0.5rem 0;
+}
+
+.action-description {
+  color: var(--qres-gray-600);
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.action-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.feature-tag {
+  background: var(--qres-gray-100);
+  color: var(--qres-gray-700);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--qres-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--qres-gray-200);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  border: none;
+  border-radius: var(--qres-radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--qres-transition-normal);
+  font-size: 0.9rem;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--qres-shadow-sm);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--qres-shadow-md);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// === АДАПТИВНОСТЬ ===
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dashboard-main {
+    padding: 1rem;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-card {
+    padding: 1.25rem;
+  }
+
+  .action-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .action-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .action-title {
+    font-size: 1.1rem;
+  }
+
+  .action-description {
+    font-size: 0.85rem;
+  }
+
+  .feature-tag {
+    font-size: 0.7rem;
+  }
+
+  .user-details {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.75rem;
+  }
+
+  .dashboard-main {
+    padding: 0.75rem;
+  }
+
+  .action-card {
+    padding: 1rem;
+  }
+
+  .action-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+
+  .action-title {
+    font-size: 1rem;
+  }
+
+  .action-description {
+    font-size: 0.8rem;
+  }
+
+  .action-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.8rem;
+  }
+
+  .feature-tag {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
