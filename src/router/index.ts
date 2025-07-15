@@ -47,6 +47,16 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true
       }
+    },
+    {
+      path: '/template',
+      name: 'template',
+      component: () => import('@/views/TemplatePageView.vue'),
+      meta: {
+        title: 'Шаблонная страница',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
     }
   ]
 })
