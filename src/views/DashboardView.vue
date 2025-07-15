@@ -61,7 +61,7 @@
                 <span class="feature-tag">Смена пароля</span>
               </div>
             </div>
-            <button class="action-btn primary">
+            <button @click="$router.push('/users')" class="action-btn primary">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>

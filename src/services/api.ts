@@ -26,14 +26,54 @@ export interface User {
   id: number
   username: string
   full_name: string
-  email?: string
-  role: string
+  role: 'admin' | 'waiter' | 'kitchen'
   is_active: boolean
+  shift_active: boolean
+  phone?: string
+  passport?: string
+  avatar_url?: string
+  pin_code?: string
+  created_by_id?: number
+  last_login?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateUserData {
+  username: string
+  password: string
+  full_name: string
+  role: 'admin' | 'waiter' | 'kitchen'
+  is_active: boolean
+  phone?: string
+  passport?: string
+  pin_code?: string
+}
+
+export interface UpdateUserData {
+  username?: string
+  full_name?: string
+  role?: 'admin' | 'waiter' | 'kitchen'
+  is_active?: boolean
+  shift_active?: boolean
+  phone?: string
+  passport?: string
+  pin_code?: string
+}
+
+export interface ChangePasswordData {
+  new_password: string
+  confirm_password: string
 }
 
 export interface ApiError {
   detail: string
   status_code?: number
+}
+
+export interface UsersResponse {
+  users: User[]
+  total: number
 }
 
 class ApiService {
@@ -112,13 +152,71 @@ class ApiService {
   }
 
   // Получение списка пользователей (для админов)
-  async getUsers(): Promise<User[]> {
+  async getUsers(): Promise<UsersResponse> {
     try {
       const response = await api.get('/users')
       return response.data
     } catch (error) {
       console.error('Failed to get users:', error)
       throw new Error('Не удалось получить список пользователей')
+    }
+  }
+
+  // Создание нового пользователя
+  async createUser(userData: CreateUserData): Promise<User> {
+    try {
+      const response = await api.post('/users', userData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create user:', error)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.detail || 'Ошибка создания пользователя'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Не удалось создать пользователя')
+    }
+  }
+
+  // Обновление пользователя
+  async updateUser(id: number, userData: UpdateUserData): Promise<User> {
+    try {
+      const response = await api.patch(`/users/${id}`, userData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update user:', error)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.detail || 'Ошибка обновления пользователя'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Не удалось обновить пользователя')
+    }
+  }
+
+  // Удаление пользователя
+  async deleteUser(id: number): Promise<void> {
+    try {
+      await api.delete(`/users/${id}`)
+    } catch (error) {
+      console.error('Failed to delete user:', error)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.detail || 'Ошибка удаления пользователя'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Не удалось удалить пользователя')
+    }
+  }
+
+  // Смена пароля пользователя
+  async changeUserPassword(id: number, passwordData: ChangePasswordData): Promise<void> {
+    try {
+      await api.patch(`/users/${id}/password`, passwordData)
+    } catch (error) {
+      console.error('Failed to change password:', error)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.detail || 'Ошибка смены пароля'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Не удалось изменить пароль')
     }
   }
 
