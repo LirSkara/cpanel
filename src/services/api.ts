@@ -125,8 +125,8 @@ class ApiService {
   // Получение статистики (для dashboard)
   async getDashboardStats(): Promise<any> {
     try {
-      const response = await api.get('/stats/dashboard')
-      return response.data
+      const response = await api.get('/dashboard/stats')
+      return response.data.data // Возвращаем данные из поля data
     } catch (error) {
       console.error('Failed to get dashboard stats:', error)
       throw new Error('Не удалось получить статистику')
