@@ -1,5 +1,5 @@
 <template>
-  <div class="users-management-page">
+  <div class="users-management-page pt-2">
     <!-- Хлебные крошки и заголовок -->
     <div class="page-header">
       <nav class="breadcrumb">
@@ -195,6 +195,11 @@
           </button>
         </div>
         
+        <!-- Блок для отображения ошибок валидации -->
+        <div v-if="validationErrors" class="validation-errors">
+          <pre>{{ validationErrors }}</pre>
+        </div>
+        
         <form @submit.prevent="createUser" class="user-form">
           <div class="form-group">
             <label class="form-label">Полное имя</label>
@@ -302,6 +307,11 @@
           <button @click="closeEditModal" class="modal-close">
             <i class="bi bi-x"></i>
           </button>
+        </div>
+        
+        <!-- Блок для отображения ошибок валидации -->
+        <div v-if="editValidationErrors" class="validation-errors">
+          <pre>{{ editValidationErrors }}</pre>
         </div>
         
         <form @submit.prevent="updateUser" class="user-form">
@@ -478,11 +488,13 @@ const newUser = ref<CreateUserData>({
   pin_code: ''
 })
 const creatingUser = ref(false)
+const validationErrors = ref<string>('')
 
 // Редактирование пользователя
 const editingUser = ref<UpdateUserData>({})
 const editingUserId = ref<number | null>(null)
 const updatingUser = ref(false)
+const editValidationErrors = ref<string>('')
 
 // Смена пароля
 const passwordData = ref<ChangePasswordData>({
@@ -601,6 +613,7 @@ const resetFilters = () => {
 // Создание пользователя
 const closeCreateModal = () => {
   showCreateModal.value = false
+  validationErrors.value = '' // Очищаем ошибки валидации
   newUser.value = {
     username: '',
     password: '',
@@ -616,6 +629,8 @@ const closeCreateModal = () => {
 const createUser = async () => {
   try {
     creatingUser.value = true
+    validationErrors.value = '' // Очищаем предыдущие ошибки
+    
     const user = await apiService.createUser(newUser.value)
     
     if (Array.isArray(users.value)) {
@@ -627,7 +642,12 @@ const createUser = async () => {
     closeCreateModal()
   } catch (error) {
     console.error('Failed to create user:', error)
-    // Здесь можно добавить уведомление об ошибке
+    
+    if (error instanceof Error) {
+      validationErrors.value = error.message
+    } else {
+      validationErrors.value = 'Произошла неизвестная ошибка'
+    }
   } finally {
     creatingUser.value = false
   }
@@ -651,6 +671,7 @@ const editUser = (user: User) => {
 
 const closeEditModal = () => {
   showEditModal.value = false
+  editValidationErrors.value = '' // Очищаем ошибки валидации
   editingUser.value = {}
   editingUserId.value = null
 }
@@ -660,6 +681,8 @@ const updateUser = async () => {
   
   try {
     updatingUser.value = true
+    editValidationErrors.value = '' // Очищаем предыдущие ошибки
+    
     const updatedUser = await apiService.updateUser(editingUserId.value, editingUser.value)
     const index = users.value.findIndex(u => u.id === editingUserId.value)
     if (index !== -1) {
@@ -668,7 +691,12 @@ const updateUser = async () => {
     closeEditModal()
   } catch (error) {
     console.error('Failed to update user:', error)
-    // Здесь можно добавить уведомление об ошибке
+    
+    if (error instanceof Error) {
+      editValidationErrors.value = error.message
+    } else {
+      editValidationErrors.value = 'Произошла неизвестная ошибка'
+    }
   } finally {
     updatingUser.value = false
   }
