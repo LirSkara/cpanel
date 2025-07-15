@@ -98,6 +98,56 @@ export interface UsersResponse {
   total: number
 }
 
+export interface Table {
+  id: number
+  number: number
+  qr_code: string
+  seats: number
+  is_occupied: boolean
+  is_active: boolean
+  description: string | null
+  location_id: number
+  current_order_id: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateTableData {
+  number: number
+  seats: number
+  location_id: number
+  description?: string
+  is_active: boolean
+}
+
+export interface UpdateTableData {
+  number?: number
+  seats?: number
+  location_id?: number
+  description?: string
+  is_active?: boolean
+}
+
+export interface TablesResponse {
+  tables: Table[]
+  total: number
+}
+
+export interface Location {
+  id: number
+  name: string
+  description: string | null
+  color: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface LocationsResponse {
+  locations: Location[]
+  total: number
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -402,6 +452,86 @@ class ApiService {
     } catch (error) {
       console.error('Failed to get dashboard stats:', error)
       this.handleApiError(error, 'Не удалось получить статистику')
+    }
+  }
+
+  // === МЕТОДЫ ДЛЯ РАБОТЫ С ЛОКАЦИЯМИ ===
+
+  // Получение всех локаций
+  async getLocations(): Promise<LocationsResponse> {
+    try {
+      const response = await api.get('/locations/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get locations:', error)
+      this.handleApiError(error, 'Не удалось получить список локаций')
+    }
+  }
+
+  // === МЕТОДЫ ДЛЯ РАБОТЫ СО СТОЛИКАМИ ===
+
+  // Получение всех столиков
+  async getTables(): Promise<TablesResponse> {
+    try {
+      const response = await api.get('/tables/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get tables:', error)
+      this.handleApiError(error, 'Не удалось получить список столиков')
+    }
+  }
+
+  // Получение столика по ID
+  async getTable(id: number): Promise<Table> {
+    try {
+      const response = await api.get(`/tables/${id}/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get table:', error)
+      this.handleApiError(error, 'Не удалось получить столик')
+    }
+  }
+
+  // Создание нового столика
+  async createTable(tableData: CreateTableData): Promise<Table> {
+    try {
+      const response = await api.post('/tables/', tableData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create table:', error)
+      this.handleApiError(error, 'Не удалось создать столик')
+    }
+  }
+
+  // Обновление столика
+  async updateTable(id: number, tableData: UpdateTableData): Promise<Table> {
+    try {
+      const response = await api.patch(`/tables/${id}/`, tableData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update table:', error)
+      this.handleApiError(error, 'Не удалось обновить столик')
+    }
+  }
+
+  // Удаление столика
+  async deleteTable(id: number): Promise<void> {
+    try {
+      await api.delete(`/tables/${id}/`)
+    } catch (error) {
+      console.error('Failed to delete table:', error)
+      this.handleApiError(error, 'Не удалось удалить столик')
+    }
+  }
+
+  // Генерация QR-кода для столика
+  async generateTableQR(id: number): Promise<string> {
+    try {
+      const response = await api.get(`/tables/${id}/qr-code/`)
+      return response.data.qr_code_url
+    } catch (error) {
+      console.error('Failed to generate QR code:', error)
+      this.handleApiError(error, 'Не удалось сгенерировать QR-код')
     }
   }
 }

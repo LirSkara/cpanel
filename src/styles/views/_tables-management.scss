@@ -1,0 +1,307 @@
+// Стили для страницы управления столиками
+@use '../variables' as *;
+
+.tables-page {
+  min-height: 100vh;
+  background: var(--qres-gradient-primary);
+  position: relative;
+  padding-bottom: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+  }
+
+  // Кастомные стили для карточек с glass эффектом
+  .card {
+    @include qres-glass-effect();
+    border: none !important;
+    
+    .card-body {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  // Кастомные стили для модальных окон с glass эффектом
+  .modal-content {
+    @include qres-glass-effect();
+    border: none;
+    
+    .modal-body {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .table-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-bottom: 1px solid #dee2e6;
+      padding: 1rem;
+      font-weight: 600;
+      
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+
+      i {
+        font-size: 1.1rem;
+        width: 16px;
+        text-align: center;
+      }
+
+      > div {
+        flex: 1;
+        min-width: 0;
+      }
+
+      small {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    // Цветовые схемы для разных статусов столиков
+    &.table-available {
+      border-left: 4px solid #28a745;
+      
+      .card-header {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      }
+    }
+
+    &.table-occupied {
+      border-left: 4px solid #dc3545;
+      
+      .card-header {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      }
+    }
+
+    &.table-reserved {
+      border-left: 4px solid #ffc107;
+      
+      .card-header {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      }
+    }
+
+    &.table-inactive {
+      border-left: 4px solid #6c757d;
+      opacity: 0.7;
+      
+      .card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      }
+    }
+  }
+
+  // Стили для модальных окон
+  .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+    
+    .modal-title {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+    
+    .btn-close {
+      filter: invert(1);
+    }
+  }
+
+  .modal-body {
+    padding: 2rem;
+    
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control,
+    .form-select {
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem;
+      transition: all 0.3s ease;
+      
+      &:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+    
+    .form-check-input {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.5rem;
+    }
+    
+    .btn {
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  // QR-код модальное окно
+  .qr-code-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    margin: 1rem 0;
+    
+    .qr-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 200px;
+      height: 200px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // Адаптивность
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 1rem;
+    }
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .table-card {
+      margin-bottom: 1rem;
+    }
+    
+    .modal-dialog {
+      margin: 1rem;
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+  }
+
+  // Анимации
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .table-card {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  // Утилитарные классы
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  // Стили для фильтров
+  .card-header {
+    .form-select {
+      max-width: 200px;
+    }
+  }
+  
+  // Dropdown стили
+  .dropdown-menu {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+      }
+      
+      i {
+        width: 16px;
+        text-align: center;
+      }
+    }
+  }
+  
+  // Состояние загрузки
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  // Пустое состояние
+  .text-center {
+    i {
+      opacity: 0.5;
+    }
+  }
+}

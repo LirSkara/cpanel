@@ -49,6 +49,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/tables',
+      name: 'tables',
+      component: () => import('@/views/TablesManagementView.vue'),
+      meta: {
+        title: 'Управление столиками',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),

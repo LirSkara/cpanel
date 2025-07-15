@@ -1,323 +1,190 @@
 <template>
-  <div class="template-page pt-2">
+  <div class="template-page">
     <!-- Хлебные крошки и заголовок -->
-    <div class="page-header">
-      <nav class="breadcrumb">
-        <router-link to="/dashboard" class="breadcrumb-item">
-          <i class="bi bi-house"></i>
-          Главная
-        </router-link>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item active">Шаблонная страница</span>
-      </nav>
-      
-      <div class="header-content">
-        <div class="header-left">
-          <h1 class="page-title">
-            <i class="bi bi-layout-text-window-reverse"></i>
-            Шаблонная страница
-          </h1>
-          <p class="page-subtitle">
-            Всего элементов: <span class="badge bg-primary">{{ Array.isArray(items) ? items.length : 0 }}</span>
-            • Активных: <span class="badge bg-success">{{ activeItemsCount }}</span>
-            • Неактивных: <span class="badge bg-warning">{{ inactiveItemsCount }}</span>
-          </p>
-        </div>
-        <div class="header-right">
-          <button 
-            @click="showCreateModal = true" 
-            class="btn btn-primary"
-            :disabled="loading"
-          >
-            <i class="bi bi-plus-circle"></i>
-            Добавить элемент
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Фильтры и поиск -->
-    <div class="filters-section">
-      <div class="filters-content">
-        <div class="search-box">
-          <i class="bi bi-search search-icon"></i>
-          <input 
-            v-model="searchQuery" 
-            type="text" 
-            placeholder="Поиск по названию..."
-            class="search-input"
-          >
-          <button 
-            v-if="searchQuery" 
-            @click="clearSearch" 
-            class="search-clear"
-            type="button"
-          >
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
-        
-        <div class="filter-controls">
-          <div class="filter-select">
-            <select v-model="categoryFilter">
-              <option value="">Все категории</option>
-              <option value="category1">Категория 1</option>
-              <option value="category2">Категория 2</option>
-              <option value="category3">Категория 3</option>
-            </select>
-          </div>
+    <div class="container-fluid py-4">
+      <div class="card shadow-sm border-0 mb-4 p-3">
+        <div class="card-body">
+          <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <router-link to="/dashboard" class="text-decoration-none text-dark">
+                  <i class="bi bi-house me-1"></i>
+                  Главная
+                </router-link>
+              </li>
+              <li class="breadcrumb-item active text-muted" aria-current="page">Шаблонная страница</li>
+            </ol>
+          </nav>
           
-          <div class="filter-select">
-            <select v-model="statusFilter">
-              <option value="">Все статусы</option>
-              <option value="active">Активные</option>
-              <option value="inactive">Неактивные</option>
-            </select>
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h1 class="h2 mb-2 d-flex align-items-center">
+                <i class="bi bi-layout-text-window-reverse me-2 text-primary"></i>
+                Шаблонная страница
+              </h1>
+              <p class="text-muted mb-0">
+                Всего элементов: <span class="badge bg-primary">{{ Array.isArray(items) ? items.length : 0 }}</span>
+                • Активных: <span class="badge bg-success">{{ activeItemsCount }}</span>
+                • Неактивных: <span class="badge bg-warning">{{ inactiveItemsCount }}</span>
+              </p>
+            </div>
+            <div class="col-md-4 text-end">
+              <button 
+                @click="showCreateModal = true" 
+                class="btn btn-primary fs-5"
+                :disabled="loading"
+              >
+                <i class="bi bi-plus-circle me-1"></i>
+                Добавить элемент
+              </button>
+            </div>
           </div>
-          
-          <button 
-            @click="resetFilters" 
-            class="btn btn-outline-secondary"
-            :disabled="!hasActiveFilters"
-          >
-            <i class="bi bi-arrow-clockwise"></i>
-            Сбросить
-          </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Таблица элементов -->
-    <div class="items-table-section">
-      <div class="table-container">
-        <div v-if="loading" class="loading-state">
-          <div class="spinner-border" role="status">
-            <span class="visually-hidden">Загрузка...</span>
-          </div>
-          <p>Загрузка элементов...</p>
-        </div>
-        
-        <div v-else-if="filteredItems.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <i class="bi bi-inbox"></i>
-          </div>
-          <h3>Элементы не найдены</h3>
-          <p>Попробуйте изменить параметры поиска или добавить новый элемент</p>
-        </div>
-        
-        <table v-else class="items-table">
-          <thead>
-            <tr>
-              <th>Элемент</th>
-              <th>Категория</th>
-              <th>Статус</th>
-              <th>Создан</th>
-              <th>Обновлен</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in filteredItems" :key="item.id" class="item-row">
-              <td class="item-info">
-                <div class="item-icon">
-                  <i :class="getItemIcon(item.category)"></i>
-                </div>
-                <div class="item-details">
-                  <div class="item-name">{{ item.name }}</div>
-                  <div class="item-description">{{ item.description }}</div>
-                </div>
-              </td>
-              
-              <td class="item-category">
-                <span :class="getCategoryBadgeClass(item.category)">
-                  {{ getCategoryLabel(item.category) }}
-                </span>
-              </td>
-              
-              <td class="item-status">
-                <span :class="item.is_active ? 'status-badge active' : 'status-badge inactive'">
-                  <i :class="item.is_active ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
-                  {{ item.is_active ? 'Активен' : 'Неактивен' }}
-                </span>
-              </td>
-              
-              <td class="item-created">
-                {{ formatDate(item.created_at) }}
-              </td>
-              
-              <td class="item-updated">
-                {{ formatDate(item.updated_at) }}
-              </td>
-              
-              <td class="item-actions">
-                <div class="actions-menu">
-                  <button 
-                    @click="editItem(item)"
-                    class="action-btn edit"
-                    title="Редактировать"
-                  >
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  
-                  <button 
-                    @click="toggleItemStatus(item)"
-                    :class="item.is_active ? 'action-btn disable' : 'action-btn enable'"
-                    :title="item.is_active ? 'Деактивировать' : 'Активировать'"
-                  >
-                    <i :class="item.is_active ? 'bi bi-toggle-on' : 'bi bi-toggle-off'"></i>
-                  </button>
-                  
-                  <button 
-                    @click="deleteItem(item)"
-                    class="action-btn delete"
-                    title="Удалить"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
     <!-- Модальное окно создания элемента -->
-    <div v-if="showCreateModal" class="modal-overlay" @click="closeCreateModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3 class="modal-title">
-            <i class="bi bi-plus-circle"></i>
-            Добавить элемент
-          </h3>
-          <button @click="closeCreateModal" class="modal-close">
-            <i class="bi bi-x"></i>
-          </button>
+    <div v-if="showCreateModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" @click="closeCreateModal">
+      <div class="modal-dialog modal-dialog-centered" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-plus-circle me-2"></i>
+              Добавить элемент
+            </h5>
+            <button type="button" class="btn-close" @click="closeCreateModal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- Блок для отображения ошибок валидации -->
+            <div v-if="validationErrors" class="alert alert-danger" role="alert">
+              <pre class="mb-0">{{ validationErrors }}</pre>
+            </div>
+            
+            <form @submit.prevent="createItem">
+              <div class="mb-3">
+                <label class="form-label">Название</label>
+                <input 
+                  v-model="newItem.name" 
+                  type="text" 
+                  class="form-control"
+                  required
+                  placeholder="Введите название"
+                >
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea 
+                  v-model="newItem.description" 
+                  class="form-control"
+                  rows="3"
+                  placeholder="Введите описание"
+                ></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Категория</label>
+                <select v-model="newItem.category" class="form-select" required>
+                  <option value="">Выберите категорию</option>
+                  <option value="category1">Категория 1</option>
+                  <option value="category2">Категория 2</option>
+                  <option value="category3">Категория 3</option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <div class="form-check">
+                  <input v-model="newItem.is_active" class="form-check-input" type="checkbox" id="createActive">
+                  <label class="form-check-label" for="createActive">
+                    Активен
+                  </label>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" @click="closeCreateModal" class="btn btn-secondary">
+                  Отмена
+                </button>
+                <button type="submit" class="btn btn-primary" :disabled="creatingItem">
+                  <i class="bi bi-plus-circle me-1"></i>
+                  {{ creatingItem ? 'Создание...' : 'Создать' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        
-        <!-- Блок для отображения ошибок валидации -->
-        <div v-if="validationErrors" class="validation-errors">
-          <pre>{{ validationErrors }}</pre>
-        </div>
-        
-        <form @submit.prevent="createItem" class="item-form">
-          <div class="form-group">
-            <label class="form-label">Название</label>
-            <input 
-              v-model="newItem.name" 
-              type="text" 
-              class="form-control"
-              required
-              placeholder="Введите название"
-            >
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Описание</label>
-            <textarea 
-              v-model="newItem.description" 
-              class="form-control"
-              rows="3"
-              placeholder="Введите описание"
-            ></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Категория</label>
-            <select v-model="newItem.category" class="form-control" required>
-              <option value="">Выберите категорию</option>
-              <option value="category1">Категория 1</option>
-              <option value="category2">Категория 2</option>
-              <option value="category3">Категория 3</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-checkbox">
-              <input v-model="newItem.is_active" type="checkbox">
-              <span class="checkbox-mark"></span>
-              Активен
-            </label>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" @click="closeCreateModal" class="btn btn-secondary">
-              Отмена
-            </button>
-            <button type="submit" class="btn btn-primary" :disabled="creatingItem">
-              <i class="bi bi-plus-circle"></i>
-              {{ creatingItem ? 'Создание...' : 'Создать' }}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
 
     <!-- Модальное окно редактирования элемента -->
-    <div v-if="showEditModal" class="modal-overlay" @click="closeEditModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3 class="modal-title">
-            <i class="bi bi-pencil"></i>
-            Редактировать элемент
-          </h3>
-          <button @click="closeEditModal" class="modal-close">
-            <i class="bi bi-x"></i>
-          </button>
+    <div v-if="showEditModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" @click="closeEditModal">
+      <div class="modal-dialog modal-dialog-centered" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-pencil me-2"></i>
+              Редактировать элемент
+            </h5>
+            <button type="button" class="btn-close" @click="closeEditModal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- Блок для отображения ошибок валидации -->
+            <div v-if="editValidationErrors" class="alert alert-danger" role="alert">
+              <pre class="mb-0">{{ editValidationErrors }}</pre>
+            </div>
+            
+            <form @submit.prevent="updateItem">
+              <div class="mb-3">
+                <label class="form-label">Название</label>
+                <input 
+                  v-model="editingItem.name" 
+                  type="text" 
+                  class="form-control"
+                  required
+                >
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea 
+                  v-model="editingItem.description" 
+                  class="form-control"
+                  rows="3"
+                ></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Категория</label>
+                <select v-model="editingItem.category" class="form-select" required>
+                  <option value="category1">Категория 1</option>
+                  <option value="category2">Категория 2</option>
+                  <option value="category3">Категория 3</option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <div class="form-check">
+                  <input v-model="editingItem.is_active" class="form-check-input" type="checkbox" id="editActive">
+                  <label class="form-check-label" for="editActive">
+                    Активен
+                  </label>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" @click="closeEditModal" class="btn btn-secondary">
+                  Отмена
+                </button>
+                <button type="submit" class="btn btn-primary" :disabled="updatingItem">
+                  <i class="bi bi-check-circle me-1"></i>
+                  {{ updatingItem ? 'Сохранение...' : 'Сохранить' }}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        
-        <!-- Блок для отображения ошибок валидации -->
-        <div v-if="editValidationErrors" class="validation-errors">
-          <pre>{{ editValidationErrors }}</pre>
-        </div>
-        
-        <form @submit.prevent="updateItem" class="item-form">
-          <div class="form-group">
-            <label class="form-label">Название</label>
-            <input 
-              v-model="editingItem.name" 
-              type="text" 
-              class="form-control"
-              required
-            >
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Описание</label>
-            <textarea 
-              v-model="editingItem.description" 
-              class="form-control"
-              rows="3"
-            ></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Категория</label>
-            <select v-model="editingItem.category" class="form-control" required>
-              <option value="category1">Категория 1</option>
-              <option value="category2">Категория 2</option>
-              <option value="category3">Категория 3</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-checkbox">
-              <input v-model="editingItem.is_active" type="checkbox">
-              <span class="checkbox-mark"></span>
-              Активен
-            </label>
-          </div>
-          
-          <div class="form-actions">
-            <button type="button" @click="closeEditModal" class="btn btn-secondary">
-              Отмена
-            </button>
-            <button type="submit" class="btn btn-primary" :disabled="updatingItem">
-              <i class="bi bi-check-circle"></i>
-              {{ updatingItem ? 'Сохранение...' : 'Сохранить' }}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   </div>
@@ -360,9 +227,6 @@ interface UpdateItemData {
 // Состояние компонента
 const items = ref<Item[]>([])
 const loading = ref(false)
-const searchQuery = ref('')
-const categoryFilter = ref('')
-const statusFilter = ref('')
 
 // Модальные окна
 const showCreateModal = ref(false)
@@ -393,70 +257,7 @@ const inactiveItemsCount = computed(() =>
   Array.isArray(items.value) ? items.value.filter(item => !item.is_active).length : 0
 )
 
-const filteredItems = computed(() => {
-  if (!Array.isArray(items.value)) {
-    return []
-  }
-  
-  let filtered = items.value
-
-  // Поиск по названию
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(item => 
-      item.name.toLowerCase().includes(query) ||
-      item.description.toLowerCase().includes(query)
-    )
-  }
-
-  // Фильтр по категории
-  if (categoryFilter.value) {
-    filtered = filtered.filter(item => item.category === categoryFilter.value)
-  }
-
-  // Фильтр по статусу
-  if (statusFilter.value === 'active') {
-    filtered = filtered.filter(item => item.is_active)
-  } else if (statusFilter.value === 'inactive') {
-    filtered = filtered.filter(item => !item.is_active)
-  }
-
-  return filtered
-})
-
-// Проверка активных фильтров
-const hasActiveFilters = computed(() => {
-  return !!(searchQuery.value || categoryFilter.value || statusFilter.value)
-})
-
 // Утилиты
-const getItemIcon = (category: string) => {
-  switch (category) {
-    case 'category1': return 'bi bi-folder-fill'
-    case 'category2': return 'bi bi-file-earmark-fill'
-    case 'category3': return 'bi bi-gear-fill'
-    default: return 'bi bi-circle-fill'
-  }
-}
-
-const getCategoryLabel = (category: string) => {
-  switch (category) {
-    case 'category1': return 'Категория 1'
-    case 'category2': return 'Категория 2'
-    case 'category3': return 'Категория 3'
-    default: return category
-  }
-}
-
-const getCategoryBadgeClass = (category: string) => {
-  switch (category) {
-    case 'category1': return 'category-badge category1'
-    case 'category2': return 'category-badge category2'
-    case 'category3': return 'category-badge category3'
-    default: return 'category-badge'
-  }
-}
-
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('ru-RU', {
     day: '2-digit',
@@ -494,6 +295,33 @@ const loadItems = async () => {
         is_active: false,
         created_at: '2025-01-02T00:00:00Z',
         updated_at: '2025-01-02T00:00:00Z'
+      },
+      {
+        id: 3,
+        name: 'Элемент 3',
+        description: 'Описание элемента 3',
+        category: 'category3',
+        is_active: true,
+        created_at: '2025-01-03T00:00:00Z',
+        updated_at: '2025-01-03T00:00:00Z'
+      },
+      {
+        id: 4,
+        name: 'Элемент 4',
+        description: 'Описание элемента 4',
+        category: 'category1',
+        is_active: false,
+        created_at: '2025-01-04T00:00:00Z',
+        updated_at: '2025-01-04T00:00:00Z'
+      },
+      {
+        id: 5,
+        name: 'Элемент 5',
+        description: 'Описание элемента 5',
+        category: 'category2',
+        is_active: true,
+        created_at: '2025-01-05T00:00:00Z',
+        updated_at: '2025-01-05T00:00:00Z'
       }
     ]
   } catch (error) {
@@ -502,17 +330,6 @@ const loadItems = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const resetFilters = () => {
-  searchQuery.value = ''
-  categoryFilter.value = ''
-  statusFilter.value = ''
-}
-
-// Методы для поиска
-const clearSearch = () => {
-  searchQuery.value = ''
 }
 
 // Создание элемента
@@ -616,49 +433,6 @@ const updateItem = async () => {
     }
   } finally {
     updatingItem.value = false
-  }
-}
-
-// Изменение статуса элемента
-const toggleItemStatus = async (item: Item) => {
-  if (!Array.isArray(items.value)) return
-  
-  try {
-    // Здесь должен быть вызов API
-    // const updatedItem = await apiService.updateItem(item.id, {
-    //   is_active: !item.is_active
-    // })
-    
-    // Пример изменения статуса
-    const index = items.value.findIndex(i => i.id === item.id)
-    if (index !== -1) {
-      items.value[index] = {
-        ...items.value[index],
-        is_active: !item.is_active,
-        updated_at: new Date().toISOString()
-      }
-    }
-  } catch (error) {
-    console.error('Failed to toggle item status:', error)
-  }
-}
-
-// Удаление элемента
-const deleteItem = async (item: Item) => {
-  if (!Array.isArray(items.value)) return
-  
-  if (!confirm(`Вы уверены, что хотите удалить элемент "${item.name}"?`)) {
-    return
-  }
-  
-  try {
-    // Здесь должен быть вызов API
-    // await apiService.deleteItem(item.id)
-    
-    // Пример удаления элемента
-    items.value = items.value.filter(i => i.id !== item.id)
-  } catch (error) {
-    console.error('Failed to delete item:', error)
   }
 }
 
