@@ -143,6 +143,20 @@ export interface Location {
   updated_at: string
 }
 
+export interface CreateLocationData {
+  name: string
+  description?: string
+  color?: string
+  is_active: boolean
+}
+
+export interface UpdateLocationData {
+  name?: string
+  description?: string
+  color?: string
+  is_active?: boolean
+}
+
 export interface LocationsResponse {
   locations: Location[]
   total: number
@@ -465,6 +479,82 @@ class ApiService {
     } catch (error) {
       console.error('Failed to get locations:', error)
       this.handleApiError(error, 'Не удалось получить список локаций')
+    }
+  }
+
+  // Создание новой локации
+  async createLocation(locationData: CreateLocationData): Promise<Location> {
+    try {
+      const response = await api.post('/locations/', locationData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create location:', error)
+      this.handleApiError(error, 'Не удалось создать локацию')
+    }
+  }
+
+  // Обновление локации
+  async updateLocation(id: number, locationData: UpdateLocationData): Promise<Location> {
+    try {
+      const response = await api.patch(`/locations/${id}/`, locationData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update location:', error)
+      this.handleApiError(error, 'Не удалось обновить локацию')
+    }
+  }
+
+  // Получение столиков локации
+  async getLocationTables(id: number): Promise<TablesResponse> {
+    try {
+      const response = await api.get(`/locations/${id}/tables/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get location tables:', error)
+      this.handleApiError(error, 'Не удалось получить столики локации')
+    }
+  }
+
+  // Синхронизация столиков локации
+  async syncLocationTables(id: number): Promise<{ message: string }> {
+    try {
+      const response = await api.patch(`/locations/${id}/sync-tables/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to sync location tables:', error)
+      this.handleApiError(error, 'Не удалось синхронизировать столики локации')
+    }
+  }
+
+  // Удаление локации
+  async deleteLocation(id: number): Promise<void> {
+    try {
+      await api.delete(`/locations/${id}/`)
+    } catch (error) {
+      console.error('Failed to delete location:', error)
+      this.handleApiError(error, 'Не удалось удалить локацию')
+    }
+  }
+
+  // Проверка целостности данных локаций
+  async checkLocationsIntegrity(): Promise<{ message: string; issues?: any[] }> {
+    try {
+      const response = await api.get('/locations/admin/integrity-check/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to check locations integrity:', error)
+      this.handleApiError(error, 'Не удалось проверить целостность данных локаций')
+    }
+  }
+
+  // Автоматическое исправление проблем локаций
+  async autoFixLocations(): Promise<{ message: string; fixed?: any[] }> {
+    try {
+      const response = await api.post('/locations/admin/auto-fix/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to auto-fix locations:', error)
+      this.handleApiError(error, 'Не удалось выполнить автоматическое исправление')
     }
   }
 

@@ -111,7 +111,7 @@
                 <span class="feature-tag">Столики</span>
               </div>
             </div>
-            <button class="action-btn info">
+            <button @click="$router.push('/locations')" class="action-btn info">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>

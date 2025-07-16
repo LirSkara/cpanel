@@ -5,6 +5,10 @@
 @use 'variables';
 @use 'views/login';
 @use 'views/dashboard';
+@use 'views/tables-management';
+@use 'views/locations-management';
+@use 'views/users-management';
+@use 'views/template-page';
 
 // === ОБЩИЕ СТИЛИ ===
 * {

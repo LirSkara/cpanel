@@ -59,6 +59,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/locations',
+      name: 'locations',
+      component: () => import('@/views/LocationsManagementView.vue'),
+      meta: {
+        title: 'Управление локациями',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),
