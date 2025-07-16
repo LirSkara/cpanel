@@ -89,6 +89,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/ingredients',
+      name: 'ingredients',
+      component: () => import('@/views/IngredientsManagementView.vue'),
+      meta: {
+        title: 'Управление ингредиентами',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),

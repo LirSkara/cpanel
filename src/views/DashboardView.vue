@@ -211,7 +211,7 @@
                 <span class="feature-tag">Состав</span>
               </div>
             </div>
-            <button class="action-btn success">
+            <button @click="$router.push('/ingredients')" class="action-btn success">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>

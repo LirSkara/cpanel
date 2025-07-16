@@ -245,6 +245,15 @@ export interface DishVariation {
   updated_at: string
 }
 
+export interface Ingredient {
+  id: number
+  name: string
+  description: string | null
+  is_allergen: boolean
+  created_at: string
+  updated_at: string
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -986,6 +995,111 @@ class ApiService {
     } catch (error) {
       console.error('Failed to delete dish variation:', error)
       this.handleApiError(error, 'Не удалось удалить вариацию блюда')
+    }
+  }
+
+  // === INGREDIENTS ===
+
+  // Получение списка ингредиентов
+  async getIngredients(): Promise<Ingredient[]> {
+    try {
+      const response = await api.get('/ingredients')
+      console.log('Raw ingredients response:', response.data)
+      
+      // Проверяем разные возможные структуры ответа
+      let ingredients: Ingredient[] = []
+      
+      if (response.data) {
+        if (Array.isArray(response.data)) {
+          ingredients = response.data
+        } else if (response.data.ingredients && Array.isArray(response.data.ingredients)) {
+          ingredients = response.data.ingredients
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          ingredients = response.data.data
+        }
+      }
+      
+      console.log('Processed ingredients:', ingredients)
+      return ingredients
+    } catch (error) {
+      console.error('Failed to get ingredients:', error)
+      this.handleApiError(error, 'Не удалось получить список ингредиентов')
+      return []
+    }
+  }
+
+  // Получение списка аллергенов
+  async getAllergens(): Promise<Ingredient[]> {
+    try {
+      const response = await api.get('/ingredients/allergens/list')
+      console.log('Raw allergens response:', response.data)
+      
+      // Проверяем разные возможные структуры ответа
+      let allergens: Ingredient[] = []
+      
+      if (response.data) {
+        if (Array.isArray(response.data)) {
+          allergens = response.data
+        } else if (response.data.allergens && Array.isArray(response.data.allergens)) {
+          allergens = response.data.allergens
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          allergens = response.data.data
+        }
+      }
+      
+      console.log('Processed allergens:', allergens)
+      return allergens
+    } catch (error) {
+      console.error('Failed to get allergens:', error)
+      this.handleApiError(error, 'Не удалось получить список аллергенов')
+      return []
+    }
+  }
+
+  // Создание ингредиента
+  async createIngredient(ingredient: Partial<Ingredient>): Promise<Ingredient> {
+    try {
+      const response = await api.post('/ingredients', ingredient)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create ingredient:', error)
+      this.handleApiError(error, 'Не удалось создать ингредиент')
+      throw error
+    }
+  }
+
+  // Получение ингредиента по ID
+  async getIngredient(id: number): Promise<Ingredient> {
+    try {
+      const response = await api.get(`/ingredients/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get ingredient:', error)
+      this.handleApiError(error, 'Не удалось получить ингредиент')
+      throw error
+    }
+  }
+
+  // Обновление ингредиента
+  async updateIngredient(id: number, ingredient: Partial<Ingredient>): Promise<Ingredient> {
+    try {
+      const response = await api.patch(`/ingredients/${id}`, ingredient)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update ingredient:', error)
+      this.handleApiError(error, 'Не удалось обновить ингредиент')
+      throw error
+    }
+  }
+
+  // Удаление ингредиента
+  async deleteIngredient(id: number): Promise<void> {
+    try {
+      await api.delete(`/ingredients/${id}`)
+    } catch (error) {
+      console.error('Failed to delete ingredient:', error)
+      this.handleApiError(error, 'Не удалось удалить ингредиент')
+      throw error
     }
   }
 }
