@@ -524,11 +524,55 @@ class ApiService {
     }
   }
 
-  // Генерация QR-кода для столика
+  // Обновление статуса столика
+  async updateTableStatus(id: number, is_occupied: boolean): Promise<Table> {
+    try {
+      const response = await api.patch(`/tables/${id}/status/`, { is_occupied })
+      return response.data
+    } catch (error) {
+      console.error('Failed to update table status:', error)
+      this.handleApiError(error, 'Не удалось обновить статус столика')
+    }
+  }
+
+  // Получение QR-кода для столика
+  async getTableQR(id: number): Promise<{ qr_code: string; qr_code_url: string }> {
+    try {
+      const response = await api.get(`/tables/${id}/qr/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get table QR code:', error)
+      this.handleApiError(error, 'Не удалось получить QR-код столика')
+    }
+  }
+
+  // Получение статуса синхронизации столика
+  async getTableSyncStatus(id: number): Promise<{ sync_status: string; last_sync: string }> {
+    try {
+      const response = await api.get(`/tables/${id}/sync-status/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get table sync status:', error)
+      this.handleApiError(error, 'Не удалось получить статус синхронизации столика')
+    }
+  }
+
+  // Принудительная синхронизация столика
+  async forceTableSync(id: number): Promise<{ message: string; sync_status: string }> {
+    try {
+      const response = await api.patch(`/tables/${id}/force-sync/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to force table sync:', error)
+      this.handleApiError(error, 'Не удалось принудительно синхронизировать столик')
+    }
+  }
+
+  // Генерация QR-кода для столика (устаревший метод, заменен на getTableQR)
   async generateTableQR(id: number): Promise<string> {
     try {
-      const response = await api.get(`/tables/${id}/qr-code/`)
-      return response.data.qr_code_url
+      const response = await this.getTableQR(id)
+      return response.qr_code_url
     } catch (error) {
       console.error('Failed to generate QR code:', error)
       this.handleApiError(error, 'Не удалось сгенерировать QR-код')

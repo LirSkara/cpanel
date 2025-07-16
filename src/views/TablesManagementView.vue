@@ -52,26 +52,57 @@
           <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
               <div class="row align-items-center">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <h5 class="mb-0">
                     <i class="bi bi-table me-2"></i>
                     Список столиков
                   </h5>
                 </div>
-                <div class="col-md-6">
-                  <div class="d-flex gap-2">
-                    <select v-model="statusFilter" class="form-select form-select-sm">
-                      <option value="">Все статусы</option>
-                      <option value="available">Доступные</option>
-                      <option value="occupied">Занятые</option>
-                      <option value="inactive">Неактивные</option>
-                    </select>
-                    <select v-model="locationFilter" class="form-select form-select-sm">
-                      <option value="">Все локации</option>
-                      <option v-for="location in locations" :key="location.id" :value="location.id.toString()">
-                        {{ location.name }}
-                      </option>
-                    </select>
+                <div class="col-md-8">
+                  <div class="d-flex gap-2 align-items-center">
+                    <!-- Массовые действия -->
+                    <div v-if="selectedTables.length > 0" class="btn-group btn-group-sm">
+                      <button 
+                        class="btn btn-outline-primary"
+                        @click="bulkActivate"
+                        :title="`Активировать ${selectedTables.length} столиков`"
+                      >
+                        <i class="bi bi-check-circle me-1"></i>
+                        Активировать ({{ selectedTables.length }})
+                      </button>
+                      <button 
+                        class="btn btn-outline-secondary"
+                        @click="bulkDeactivate"
+                        :title="`Деактивировать ${selectedTables.length} столиков`"
+                      >
+                        <i class="bi bi-x-circle me-1"></i>
+                        Деактивировать ({{ selectedTables.length }})
+                      </button>
+                      <button 
+                        class="btn btn-outline-danger"
+                        @click="bulkDelete"
+                        :title="`Удалить ${selectedTables.length} столиков`"
+                      >
+                        <i class="bi bi-trash me-1"></i>
+                        Удалить ({{ selectedTables.length }})
+                      </button>
+                    </div>
+                    
+                    <!-- Фильтры -->
+                    <div class="d-flex gap-2 ms-auto">
+                      <select v-model="statusFilter" class="form-select form-select-sm">
+                        <option value="">Все статусы</option>
+                        <option value="available">Доступные</option>
+                        <option value="occupied">Занятые</option>
+                        <option value="inactive">Неактивные</option>
+                      </select>
+                      <select v-model="locationFilter" class="form-select form-select-sm">
+                        <option value="">Все локации</option>
+                        <option v-for="location in locations" :key="location.id" :value="location.id.toString()">
+                          {{ location.name }}
+                        </option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -95,36 +126,111 @@
               </div>
               
               <div v-else class="row">
-                <div v-for="table in filteredTables" :key="table.id" class="col-lg-4 col-md-6 mb-4">
-                  <div class="card h-100 border-0 shadow-sm table-card" :class="getTableCardClass(table)">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                <div v-for="table in filteredTables" :key="table.id" class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                  <div class="card border-0 shadow-sm table-card" :class="getTableCardClass(table)">
+                    <!-- Компактный заголовок -->
+                    <div class="card-header d-flex justify-content-between align-items-center py-2">
                       <div class="d-flex align-items-center">
+                        <div class="form-check me-2">
+                          <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            :id="`table-${table.id}`"
+                            v-model="selectedTables"
+                            :value="table.id"
+                          >
+                        </div>
                         <i class="bi bi-table me-2"></i>
-                        <strong>Столик {{ table.number }}</strong>
+                        <strong class="fs-6">Столик {{ table.number }}</strong>
                       </div>
-                      <div class="d-flex gap-1">
-                        <span class="badge" :class="getStatusBadgeClass(getTableStatus(table))">
-                          {{ getStatusText(getTableStatus(table)) }}
-                        </span>
+                      <span class="badge badge-sm" :class="getStatusBadgeClass(getTableStatus(table))">
+                        {{ getStatusText(getTableStatus(table)) }}
+                      </span>
+                    </div>
+                    
+                    <!-- Компактная информация -->
+                    <div class="card-body py-2">
+                      <div class="row g-2 mb-2">
+                        <div class="col-6">
+                          <div class="info-item-compact">
+                            <i class="bi bi-people-fill text-primary me-1"></i>
+                            <span class="fw-bold">{{ table.seats }}</span>
+                            <small class="text-muted ms-1">мест</small>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="info-item-compact">
+                            <i class="bi bi-geo-alt-fill text-success me-1"></i>
+                            <small class="text-truncate">{{ getLocationText(table.location_id) }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div v-if="table.current_order_id" class="row g-2 mb-2">
+                        <div class="col-12">
+                          <div class="current-order-compact">
+                            <i class="bi bi-receipt me-1"></i>
+                            <small class="fw-bold">Заказ #{{ table.current_order_id }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div v-if="table.description" class="row g-2 mb-2">
+                        <div class="col-12">
+                          <small class="text-muted text-truncate d-block">{{ table.description }}</small>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="card-footer bg-transparent border-top-0 py-2">
+                      <div class="d-flex gap-1 flex-wrap">
+                        <!-- Основные действия -->
+                        <button 
+                          class="btn btn-sm btn-outline-primary flex-fill"
+                          @click="viewTableQR(table)"
+                          :title="'QR-код столика ' + table.number"
+                        >
+                          <i class="bi bi-qr-code"></i>
+                        </button>
+                        
+                        <button 
+                          class="btn btn-sm btn-outline-secondary flex-fill"
+                          @click="editTable(table)"
+                          :title="'Редактировать столик ' + table.number"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        
+                        <button 
+                          class="btn btn-sm flex-fill"
+                          :class="table.is_occupied ? 'btn-outline-success' : 'btn-outline-warning'"
+                          @click="toggleTableOccupancy(table)"
+                          :title="table.is_occupied ? 'Освободить столик' : 'Занять столик'"
+                        >
+                          <i class="bi" :class="table.is_occupied ? 'bi-person-dash' : 'bi-person-plus'"></i>
+                        </button>
+                        
                         <div class="dropdown">
                           <button 
-                            class="btn btn-sm btn-outline-secondary" 
+                            class="btn btn-sm btn-outline-secondary dropdown-toggle-split" 
                             type="button" 
                             data-bs-toggle="dropdown"
+                            :title="'Дополнительные действия'"
                           >
                             <i class="bi bi-three-dots"></i>
                           </button>
                           <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                              <a class="dropdown-item" href="#" @click="editTable(table)">
-                                <i class="bi bi-pencil me-2"></i>
-                                Редактировать
+                              <a class="dropdown-item" href="#" @click="checkSyncStatus(table)">
+                                <i class="bi bi-arrow-clockwise me-2"></i>
+                                Статус синхронизации
                               </a>
                             </li>
                             <li>
-                              <a class="dropdown-item" href="#" @click="generateQRCode(table)">
-                                <i class="bi bi-qr-code me-2"></i>
-                                QR-код
+                              <a class="dropdown-item" href="#" @click="forceSync(table)">
+                                <i class="bi bi-cloud-arrow-up me-2"></i>
+                                Принудительная синхронизация
                               </a>
                             </li>
                             <li>
@@ -143,46 +249,13 @@
                           </ul>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div class="card-body">
-                      <div class="row g-3">
-                        <div class="col-6">
-                          <div class="info-item">
-                            <i class="bi bi-people-fill text-primary"></i>
-                            <div>
-                              <small class="text-muted">Мест</small>
-                              <div class="fw-bold">{{ table.seats }}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="info-item">
-                            <i class="bi bi-geo-alt-fill text-success"></i>
-                            <div>
-                              <small class="text-muted">Локация</small>
-                              <div class="fw-bold">{{ getLocationText(table.location_id) }}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="info-item">
-                            <i class="bi bi-info-circle text-info"></i>
-                            <div>
-                              <small class="text-muted">Описание</small>
-                              <div class="text-truncate">{{ table.description || 'Нет описания' }}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="info-item">
-                            <i class="bi bi-clock text-warning"></i>
-                            <div>
-                              <small class="text-muted">Обновлено</small>
-                              <div class="small">{{ formatDate(table.updated_at) }}</div>
-                            </div>
-                          </div>
-                        </div>
+                      
+                      <!-- Время обновления -->
+                      <div class="mt-2">
+                        <small class="text-muted">
+                          <i class="bi bi-clock me-1"></i>
+                          {{ formatDate(table.updated_at) }}
+                        </small>
                       </div>
                     </div>
                   </div>
@@ -383,23 +456,94 @@
           </div>
           
           <div class="modal-body text-center">
-            <div class="qr-code-container mb-3">
-              <div class="qr-placeholder">
-                <i class="bi bi-qr-code" style="font-size: 8rem; color: #007bff;"></i>
+            <div v-if="loadingQR" class="qr-code-container mb-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка QR-кода...</span>
               </div>
             </div>
+            
+            <div v-else-if="qrCodeData" class="qr-code-container mb-3">
+              <img :src="qrCodeData.qr_code_url" alt="QR код" class="img-fluid" style="max-width: 300px;">
+              <div class="mt-2">
+                <small class="text-muted">QR-код: {{ qrCodeData.qr_code }}</small>
+              </div>
+            </div>
+            
+            <div v-else class="qr-code-container mb-3">
+              <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Не удалось загрузить QR-код
+              </div>
+            </div>
+            
             <p class="text-muted mb-3">
               Отсканируйте QR-код для доступа к меню столика
             </p>
+            
             <div class="d-flex gap-2 justify-content-center">
-              <button class="btn btn-primary" @click="downloadQR">
+              <button class="btn btn-primary" @click="downloadQR" :disabled="!qrCodeData">
                 <i class="bi bi-download me-1"></i>
                 Скачать
               </button>
-              <button class="btn btn-outline-primary" @click="printQR">
+              <button class="btn btn-outline-primary" @click="printQR" :disabled="!qrCodeData">
                 <i class="bi bi-printer me-1"></i>
                 Печать
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно статуса синхронизации -->
+    <div v-if="showSyncModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);" @click="closeSyncModal">
+      <div class="modal-dialog modal-dialog-centered" @click.stop>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              Статус синхронизации столика {{ selectedTable?.number }}
+            </h5>
+            <button type="button" class="btn-close" @click="closeSyncModal"></button>
+          </div>
+          
+          <div class="modal-body">
+            <div v-if="loadingSyncStatus" class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка статуса...</span>
+              </div>
+            </div>
+            
+            <div v-else-if="syncStatusData" class="text-center">
+              <div class="mb-3">
+                <span class="badge fs-6" :class="getSyncStatusBadgeClass(syncStatusData.sync_status)">
+                  {{ getSyncStatusText(syncStatusData.sync_status) }}
+                </span>
+              </div>
+              
+              <div class="row">
+                <div class="col-12">
+                  <div class="info-item">
+                    <i class="bi bi-clock text-info"></i>
+                    <div>
+                      <small class="text-muted">Последняя синхронизация</small>
+                      <div class="fw-bold">{{ formatDate(syncStatusData.last_sync) }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-3">
+                <button class="btn btn-primary" @click="performForceSync" :disabled="forcingSyncStatus">
+                  <i class="bi bi-cloud-arrow-up me-1"></i>
+                  {{ forcingSyncStatus ? 'Синхронизация...' : 'Принудительная синхронизация' }}
+                </button>
+              </div>
+            </div>
+            
+            <div v-else class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              Не удалось загрузить статус синхронизации
             </div>
           </div>
         </div>
@@ -472,6 +616,7 @@ const locationFilter = ref('')
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const showQRModal = ref(false)
+const showSyncModal = ref(false)
 
 // Создание столика
 const newTable = ref<CreateTableData>({
@@ -492,6 +637,16 @@ const editValidationErrors = ref<string>('')
 
 // QR-код
 const selectedTable = ref<Table | null>(null)
+const qrCodeData = ref<{ qr_code: string; qr_code_url: string } | null>(null)
+const loadingQR = ref(false)
+
+// Статус синхронизации
+const syncStatusData = ref<{ sync_status: string; last_sync: string } | null>(null)
+const loadingSyncStatus = ref(false)
+const forcingSyncStatus = ref(false)
+
+// Массовые операции
+const selectedTables = ref<number[]>([])
 
 // Вычисляемые свойства
 const activeTablesCount = computed(() => 
@@ -565,6 +720,26 @@ const getTableCardClass = (table: Table) => {
     'occupied': 'table-occupied'
   }
   return classMap[status as keyof typeof classMap] || ''
+}
+
+const getSyncStatusText = (status: string) => {
+  const statusMap = {
+    'synced': 'Синхронизирован',
+    'pending': 'Ожидает синхронизации',
+    'failed': 'Ошибка синхронизации',
+    'in_progress': 'Синхронизация в процессе'
+  }
+  return statusMap[status as keyof typeof statusMap] || status
+}
+
+const getSyncStatusBadgeClass = (status: string) => {
+  const classMap = {
+    'synced': 'bg-success',
+    'pending': 'bg-warning',
+    'failed': 'bg-danger',
+    'in_progress': 'bg-info'
+  }
+  return classMap[status as keyof typeof classMap] || 'bg-secondary'
 }
 
 // Методы
@@ -683,35 +858,90 @@ const updateTable = async () => {
 }
 
 // QR-код
-const generateQRCode = (table: Table) => {
+const viewTableQR = async (table: Table) => {
   selectedTable.value = table
   showQRModal.value = true
+  
+  try {
+    loadingQR.value = true
+    qrCodeData.value = await apiService.getTableQR(table.id)
+  } catch (error) {
+    console.error('Failed to load QR code:', error)
+    qrCodeData.value = null
+  } finally {
+    loadingQR.value = false
+  }
 }
 
 const closeQRModal = () => {
   showQRModal.value = false
   selectedTable.value = null
+  qrCodeData.value = null
 }
 
 const downloadQR = async () => {
-  if (!selectedTable.value) return
+  if (!selectedTable.value || !qrCodeData.value) return
   
   try {
-    const qrUrl = await apiService.generateTableQR(selectedTable.value.id)
-    // Здесь должна быть логика скачивания QR-кода
-    console.log('QR URL:', qrUrl)
+    // Создаем временную ссылку для скачивания
+    const link = document.createElement('a')
+    link.href = qrCodeData.value.qr_code_url
+    link.download = `table-${selectedTable.value.number}-qr.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   } catch (error) {
     console.error('Failed to download QR code:', error)
   }
 }
 
 const printQR = () => {
-  if (!selectedTable.value) return
-  // Здесь должна быть логика печати QR-кода
-  console.log('Printing QR code for table:', selectedTable.value.number)
+  if (!selectedTable.value || !qrCodeData.value) return
+  
+  // Создаем новое окно для печати
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>QR-код столика ${selectedTable.value.number}</title>
+          <style>
+            body { text-align: center; padding: 20px; font-family: Arial, sans-serif; }
+            img { max-width: 300px; }
+            h1 { margin-bottom: 20px; }
+            p { margin-top: 20px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <h1>Столик ${selectedTable.value.number}</h1>
+          <img src="${qrCodeData.value.qr_code_url}" alt="QR код">
+          <p>Отсканируйте QR-код для доступа к меню</p>
+          <p>QR-код: ${qrCodeData.value.qr_code}</p>
+        </body>
+      </html>
+    `)
+    printWindow.document.close()
+    printWindow.print()
+  }
 }
 
 // Дополнительные действия
+const toggleTableOccupancy = async (table: Table) => {
+  if (!Array.isArray(tables.value)) return
+  
+  try {
+    const newOccupancy = !table.is_occupied
+    const updatedTable = await apiService.updateTableStatus(table.id, newOccupancy)
+    
+    const index = tables.value.findIndex(t => t.id === table.id)
+    if (index !== -1) {
+      tables.value[index] = updatedTable
+    }
+  } catch (error) {
+    console.error('Failed to toggle table occupancy:', error)
+  }
+}
+
 const toggleTableStatus = async (table: Table) => {
   if (!Array.isArray(tables.value)) return
   
@@ -728,6 +958,65 @@ const toggleTableStatus = async (table: Table) => {
   }
 }
 
+const checkSyncStatus = async (table: Table) => {
+  selectedTable.value = table
+  showSyncModal.value = true
+  
+  try {
+    loadingSyncStatus.value = true
+    syncStatusData.value = await apiService.getTableSyncStatus(table.id)
+  } catch (error) {
+    console.error('Failed to get sync status:', error)
+    syncStatusData.value = null
+  } finally {
+    loadingSyncStatus.value = false
+  }
+}
+
+const closeSyncModal = () => {
+  showSyncModal.value = false
+  selectedTable.value = null
+  syncStatusData.value = null
+}
+
+const performForceSync = async () => {
+  if (!selectedTable.value) return
+  
+  try {
+    forcingSyncStatus.value = true
+    const result = await apiService.forceTableSync(selectedTable.value.id)
+    
+    // Обновляем статус синхронизации
+    syncStatusData.value = {
+      sync_status: result.sync_status,
+      last_sync: new Date().toISOString()
+    }
+    
+    // Показываем уведомление об успехе
+    alert(result.message || 'Синхронизация выполнена успешно')
+  } catch (error) {
+    console.error('Failed to force sync:', error)
+    alert('Ошибка при выполнении синхронизации')
+  } finally {
+    forcingSyncStatus.value = false
+  }
+}
+
+const forceSync = async (table: Table) => {
+  if (!confirm(`Вы уверены, что хотите принудительно синхронизировать столик ${table.number}?`)) return
+  
+  try {
+    const result = await apiService.forceTableSync(table.id)
+    alert(result.message || 'Синхронизация выполнена успешно')
+    
+    // Обновляем данные таблицы
+    await loadTables()
+  } catch (error) {
+    console.error('Failed to force sync:', error)
+    alert('Ошибка при выполнении синхронизации')
+  }
+}
+
 const deleteTable = async (table: Table) => {
   if (!Array.isArray(tables.value)) return
   
@@ -738,6 +1027,67 @@ const deleteTable = async (table: Table) => {
     tables.value = tables.value.filter(t => t.id !== table.id)
   } catch (error) {
     console.error('Failed to delete table:', error)
+  }
+}
+
+// Массовые операции
+const bulkActivate = async () => {
+  if (!selectedTables.value.length) return
+  
+  if (!confirm(`Вы уверены, что хотите активировать ${selectedTables.value.length} столиков?`)) return
+  
+  try {
+    const promises = selectedTables.value.map(id => 
+      apiService.updateTable(id, { is_active: true })
+    )
+    await Promise.all(promises)
+    
+    // Обновляем данные
+    await loadTables()
+    selectedTables.value = []
+  } catch (error) {
+    console.error('Failed to bulk activate tables:', error)
+    alert('Ошибка при активации столиков')
+  }
+}
+
+const bulkDeactivate = async () => {
+  if (!selectedTables.value.length) return
+  
+  if (!confirm(`Вы уверены, что хотите деактивировать ${selectedTables.value.length} столиков?`)) return
+  
+  try {
+    const promises = selectedTables.value.map(id => 
+      apiService.updateTable(id, { is_active: false })
+    )
+    await Promise.all(promises)
+    
+    // Обновляем данные
+    await loadTables()
+    selectedTables.value = []
+  } catch (error) {
+    console.error('Failed to bulk deactivate tables:', error)
+    alert('Ошибка при деактивации столиков')
+  }
+}
+
+const bulkDelete = async () => {
+  if (!selectedTables.value.length) return
+  
+  if (!confirm(`Вы уверены, что хотите удалить ${selectedTables.value.length} столиков? Это действие нельзя отменить.`)) return
+  
+  try {
+    const promises = selectedTables.value.map(id => 
+      apiService.deleteTable(id)
+    )
+    await Promise.all(promises)
+    
+    // Обновляем данные
+    await loadTables()
+    selectedTables.value = []
+  } catch (error) {
+    console.error('Failed to bulk delete tables:', error)
+    alert('Ошибка при удалении столиков')
   }
 }
 
