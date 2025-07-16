@@ -534,47 +534,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.ingredients-page {
-  min-height: 100vh;
-}
-
-.table th {
-  background-color: var(--bs-light);
-  font-weight: 600;
-}
-
-.table tbody tr:hover {
-  background-color: var(--bs-light);
-}
-
-.form-check-input:checked {
-  background-color: var(--bs-primary);
-  border-color: var(--bs-primary);
-}
-
-.btn-group .btn {
-  transition: all 0.2s ease;
-}
-
-.btn-group .btn:hover {
-  transform: translateY(-1px);
-}
-
-.card {
-  border: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background-color: var(--bs-light);
-  border-bottom: 1px solid var(--bs-border-color);
-}
-
-.badge {
-  font-size: 0.75rem;
-}
-
-.display-6 {
-  font-size: 2rem;
-}
+/* Стили определены в /src/styles/views/_ingredients-management.scss */
 </style>

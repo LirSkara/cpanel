@@ -1,0 +1,240 @@
+// Стили для страницы управления способами оплаты
+@use '../variables' as *;
+
+.payment-methods-page {
+  min-height: 100vh;
+  background: var(--qres-gradient-primary);
+  position: relative;
+  padding-bottom: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+  }
+
+  // Кастомные стили для карточек с glass эффектом
+  .card {
+    @include qres-glass-effect();
+    border: none !important;
+    
+    .card-body {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  // Кастомные стили для модальных окон с glass эффектом
+  .modal-content {
+    @include qres-glass-effect();
+    border: none;
+    
+    .modal-body {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .payment-method-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    &.method-active {
+      border-left: 4px solid var(--bs-success);
+    }
+
+    &.method-inactive {
+      border-left: 4px solid var(--bs-secondary);
+      opacity: 0.8;
+    }
+
+    .card-header {
+      background: rgba(var(--bs-light-rgb), 0.7);
+      border-bottom: 1px solid rgba(var(--bs-border-color-rgb), 0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    .card-footer {
+      background: rgba(var(--bs-light-rgb), 0.5);
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .payment-method-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .info-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для форм
+  .form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+  }
+
+  // Стили для кнопок
+  .btn-group .btn {
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  // Стили для бейджей
+  .badge {
+    font-size: 0.75rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для хлебных крошек
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    
+    .breadcrumb-item {
+      position: relative;
+      z-index: 2;
+      
+      &.active {
+        color: rgba(var(--bs-muted-rgb), 0.8);
+      }
+    }
+  }
+
+  // Стили для поиска и фильтров
+  .form-select {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+    border-color: rgba(var(--bs-border-color-rgb), 0.5);
+    position: relative;
+    z-index: 2;
+    
+    &:focus {
+      background-color: rgba(var(--bs-body-bg-rgb), 0.95);
+      box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+  }
+
+  // Стили для состояния загрузки
+  .spinner-border {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для пустого состояния
+  .bi-credit-card {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для модальных окон
+  .modal-header {
+    background: rgba(var(--bs-light-rgb), 0.7);
+    border-bottom: 1px solid rgba(var(--bs-border-color-rgb), 0.3);
+    position: relative;
+    z-index: 2;
+  }
+
+  .modal-body {
+    position: relative;
+    z-index: 2;
+  }
+
+  .modal-footer {
+    background: rgba(var(--bs-light-rgb), 0.5);
+    border-top: 1px solid rgba(var(--bs-border-color-rgb), 0.3);
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для карточек деталей
+  .card-title {
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для дропдаунов
+  .dropdown-menu {
+    @include qres-glass-effect();
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    
+    .dropdown-item {
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  // Стили для алертов
+  .alert {
+    @include qres-glass-effect();
+    border: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для полей ввода
+  .form-control {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.9);
+    border-color: rgba(var(--bs-border-color-rgb), 0.5);
+    position: relative;
+    z-index: 2;
+    
+    &:focus {
+      background-color: rgba(var(--bs-body-bg-rgb), 0.95);
+      box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+  }
+
+  .form-label {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Стили для чекбоксов
+  .form-check {
+    position: relative;
+    z-index: 2;
+  }
+
+  .form-check-label {
+    position: relative;
+    z-index: 2;
+  }
+}

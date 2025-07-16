@@ -236,7 +236,7 @@
                 <span class="feature-tag">Настройки</span>
               </div>
             </div>
-            <button class="action-btn primary">
+            <button @click="$router.push('/payment-methods')" class="action-btn primary">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>

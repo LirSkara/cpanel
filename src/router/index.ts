@@ -99,6 +99,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/payment-methods',
+      name: 'payment-methods',
+      component: () => import('@/views/PaymentMethodsManagementView.vue'),
+      meta: {
+        title: 'Управление способами оплаты',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),

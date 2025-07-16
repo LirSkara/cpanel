@@ -254,6 +254,14 @@ export interface Ingredient {
   updated_at: string
 }
 
+export interface PaymentMethod {
+  id: number
+  name: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -1099,6 +1107,79 @@ class ApiService {
     } catch (error) {
       console.error('Failed to delete ingredient:', error)
       this.handleApiError(error, 'Не удалось удалить ингредиент')
+      throw error
+    }
+  }
+
+  // ========== СПОСОБЫ ОПЛАТЫ ==========
+
+  // Получение всех способов оплаты
+  async getPaymentMethods(): Promise<PaymentMethod[]> {
+    try {
+      const response = await api.get('/payment-methods/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get payment methods:', error)
+      this.handleApiError(error, 'Не удалось получить способы оплаты')
+      throw error
+    }
+  }
+
+  // Получение активных способов оплаты
+  async getActivePaymentMethods(): Promise<PaymentMethod[]> {
+    try {
+      const response = await api.get('/payment-methods/active/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get active payment methods:', error)
+      this.handleApiError(error, 'Не удалось получить активные способы оплаты')
+      throw error
+    }
+  }
+
+  // Создание нового способа оплаты
+  async createPaymentMethod(paymentMethod: Partial<PaymentMethod>): Promise<PaymentMethod> {
+    try {
+      const response = await api.post('/payment-methods/', paymentMethod)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create payment method:', error)
+      this.handleApiError(error, 'Не удалось создать способ оплаты')
+      throw error
+    }
+  }
+
+  // Получение способа оплаты по ID
+  async getPaymentMethod(id: number): Promise<PaymentMethod> {
+    try {
+      const response = await api.get(`/payment-methods/${id}/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get payment method:', error)
+      this.handleApiError(error, 'Не удалось получить способ оплаты')
+      throw error
+    }
+  }
+
+  // Обновление способа оплаты
+  async updatePaymentMethod(id: number, paymentMethod: Partial<PaymentMethod>): Promise<PaymentMethod> {
+    try {
+      const response = await api.patch(`/payment-methods/${id}/`, paymentMethod)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update payment method:', error)
+      this.handleApiError(error, 'Не удалось обновить способ оплаты')
+      throw error
+    }
+  }
+
+  // Удаление способа оплаты
+  async deletePaymentMethod(id: number): Promise<void> {
+    try {
+      await api.delete(`/payment-methods/${id}/`)
+    } catch (error) {
+      console.error('Failed to delete payment method:', error)
+      this.handleApiError(error, 'Не удалось удалить способ оплаты')
       throw error
     }
   }
