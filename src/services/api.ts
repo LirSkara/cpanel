@@ -923,7 +923,23 @@ class ApiService {
   async getDishVariations(dishId: number): Promise<DishVariation[]> {
     try {
       const response = await api.get(`/dishes/${dishId}/variations`)
-      return response.data || []
+      console.log('Raw dish variations response:', response.data)
+      
+      // Проверяем разные возможные структуры ответа
+      let variations: DishVariation[] = []
+      
+      if (response.data) {
+        if (Array.isArray(response.data)) {
+          variations = response.data
+        } else if (response.data.variations && Array.isArray(response.data.variations)) {
+          variations = response.data.variations
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          variations = response.data.data
+        }
+      }
+      
+      console.log('Processed variations:', variations)
+      return variations
     } catch (error) {
       console.error('Failed to get dish variations:', error)
       this.handleApiError(error, 'Не удалось получить вариации блюда')

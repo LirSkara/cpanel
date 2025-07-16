@@ -545,9 +545,15 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr v-if="variations.length === 0">
+                    <td colspan="7" class="text-center text-muted py-4">
+                      <i class="bi bi-info-circle me-2"></i>
+                      У этого блюда нет вариаций
+                    </td>
+                  </tr>
                   <tr v-for="variation in variations" :key="variation.id">
-                    <td>{{ variation.name }}</td>
-                    <td>{{ variation.price }} ₽</td>
+                    <td>{{ variation.name || 'Без названия' }}</td>
+                    <td>{{ variation.price || 0 }} ₽</td>
                     <td>{{ variation.weight || 'Не указано' }} г</td>
                     <td>{{ variation.calories || 'Не указано' }} ккал</td>
                     <td>
@@ -574,6 +580,156 @@
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно создания/редактирования вариации -->
+    <div class="modal fade" id="variationModal" tabindex="-1" ref="variationModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              {{ isEditingVariation ? 'Редактирование вариации' : 'Создание новой вариации' }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="saveVariation">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Название *</label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      v-model="currentVariation.name"
+                      required
+                      maxlength="255"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Цена *</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      v-model="currentVariation.price"
+                      required
+                      min="0"
+                      step="0.01"
+                    >
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <textarea 
+                  class="form-control" 
+                  v-model="currentVariation.description"
+                  rows="3"
+                  maxlength="500"
+                ></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">URL изображения</label>
+                <input 
+                  type="url" 
+                  class="form-control" 
+                  v-model="currentVariation.image_url"
+                  placeholder="https://example.com/image.jpg"
+                >
+              </div>
+              
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Вес (г)</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      v-model="currentVariation.weight"
+                      min="0"
+                      step="0.1"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Калории (ккал)</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      v-model="currentVariation.calories"
+                      min="0"
+                    >
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Порядок сортировки</label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      v-model="currentVariation.sort_order"
+                      min="0"
+                    >
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">SKU</label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  v-model="currentVariation.sku"
+                  placeholder="Артикул товара"
+                >
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      id="variation_is_available"
+                      v-model="currentVariation.is_available"
+                    >
+                    <label class="form-check-label" for="variation_is_available">
+                      Доступно для заказа
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="checkbox" 
+                      id="variation_is_default"
+                      v-model="currentVariation.is_default"
+                    >
+                    <label class="form-check-label" for="variation_is_default">
+                      Вариация по умолчанию
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              Отмена
+            </button>
+            <button type="button" class="btn btn-primary" @click="saveVariation" :disabled="isSavingVariation">
+              <span v-if="isSavingVariation" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isEditingVariation ? 'Сохранить изменения' : 'Создать вариацию' }}
+            </button>
           </div>
         </div>
       </div>
@@ -662,12 +818,15 @@ const filterAvailability = ref('')
 const viewType = ref<'grid' | 'list'>('grid')
 const isLoading = ref(false)
 const isSaving = ref(false)
+const isSavingVariation = ref(false)
 const isEditing = ref(false)
+const isEditingVariation = ref(false)
 const selectedDish = ref<Dish | null>(null)
 
 // Модальные окна
 const dishModal = ref<HTMLElement>()
 const variationsModal = ref<HTMLElement>()
+const variationModal = ref<HTMLElement>()
 
 // Текущее блюдо для редактирования
 const currentDish = ref<Partial<Dish>>({
@@ -684,6 +843,20 @@ const currentDish = ref<Partial<Dish>>({
   calories: null,
   ingredients: null,
   department: 'hot'
+})
+
+// Текущая вариация для редактирования
+const currentVariation = ref<Partial<Variation>>({
+  name: '',
+  description: null,
+  price: 0,
+  image_url: null,
+  weight: null,
+  calories: null,
+  is_default: false,
+  is_available: true,
+  sort_order: 0,
+  sku: null
 })
 
 // Вычисляемые свойства
@@ -916,24 +1089,77 @@ const deleteSelected = async () => {
 const viewVariations = async (dish: Dish) => {
   try {
     selectedDish.value = dish
+    console.log('Loading variations for dish:', dish.id, dish.name)
+    
     const data = await apiService.getDishVariations(dish.id)
+    console.log('Received variations data:', data)
+    
     variations.value = data
     
     const modal = await createBootstrapModal(variationsModal.value!)
     modal.show()
   } catch (error) {
     console.error('Ошибка загрузки вариаций:', error)
+    variations.value = []
   }
 }
 
-const showCreateVariationModal = () => {
-  // Здесь будет логика создания вариации
-  console.log('Создание вариации')
+const showCreateVariationModal = async () => {
+  isEditingVariation.value = false
+  currentVariation.value = {
+    name: '',
+    description: null,
+    price: 0,
+    image_url: null,
+    weight: null,
+    calories: null,
+    is_default: false,
+    is_available: true,
+    sort_order: 0,
+    sku: null
+  }
+  
+  const modal = await createBootstrapModal(variationModal.value!)
+  modal.show()
 }
 
-const editVariation = (variation: Variation) => {
-  // Здесь будет логика редактирования вариации
-  console.log('Редактирование вариации:', variation)
+const editVariation = async (variation: Variation) => {
+  isEditingVariation.value = true
+  currentVariation.value = { ...variation }
+  
+  const modal = await createBootstrapModal(variationModal.value!)
+  modal.show()
+}
+
+const saveVariation = async () => {
+  if (!selectedDish.value) return
+  
+  try {
+    isSavingVariation.value = true
+    
+    if (isEditingVariation.value) {
+      await apiService.updateDishVariation(selectedDish.value.id, currentVariation.value.id!, currentVariation.value)
+    } else {
+      await apiService.createDishVariation(selectedDish.value.id, currentVariation.value)
+    }
+    
+    // Скрываем модальное окно
+    const modalElement = variationModal.value!
+    const modal = window.bootstrap?.Modal?.getInstance(modalElement)
+    if (modal) {
+      modal.hide()
+    } else {
+      const closeBtn = modalElement.querySelector('[data-bs-dismiss="modal"]') as HTMLElement
+      closeBtn?.click()
+    }
+    
+    // Обновляем список вариаций
+    await viewVariations(selectedDish.value)
+  } catch (error) {
+    console.error('Ошибка сохранения вариации:', error)
+  } finally {
+    isSavingVariation.value = false
+  }
 }
 
 const deleteVariation = async (variation: Variation) => {
