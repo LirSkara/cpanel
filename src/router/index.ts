@@ -79,6 +79,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/dishes',
+      name: 'dishes',
+      component: () => import('@/views/DishesManagementView.vue'),
+      meta: {
+        title: 'Управление блюдами',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),

@@ -209,6 +209,42 @@ export interface CategoryDish {
   category_id: number
 }
 
+export interface Dish {
+  id: number
+  name: string
+  description: string
+  code: string | null
+  main_image_url: string | null
+  is_available: boolean
+  sort_order: number
+  is_popular: boolean
+  category_id: number
+  cooking_time: number | null
+  weight: number | null
+  calories: number | null
+  ingredients: string | null
+  department: 'bar' | 'cold' | 'hot' | 'dessert' | 'grill' | 'bakery'
+  created_at: string
+  updated_at: string
+}
+
+export interface DishVariation {
+  id: number
+  name: string
+  description: string | null
+  price: number
+  image_url: string | null
+  weight: number | null
+  calories: number | null
+  is_default: boolean
+  is_available: boolean
+  sort_order: number
+  dish_id: number
+  sku: string | null
+  created_at: string
+  updated_at: string
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -711,10 +747,29 @@ class ApiService {
   async getCategories(): Promise<CategoriesResponse> {
     try {
       const response = await api.get('/categories/')
-      return response.data
+      console.log('Raw categories response:', response.data)
+      
+      // Проверяем структуру ответа
+      if (response.data && typeof response.data === 'object') {
+        // Если данные приходят в формате { categories: [...], total: number }
+        if (response.data.categories && Array.isArray(response.data.categories)) {
+          return response.data
+        }
+        // Если данные приходят как массив категорий
+        if (Array.isArray(response.data)) {
+          return {
+            categories: response.data,
+            total: response.data.length
+          }
+        }
+      }
+      
+      console.warn('Unexpected categories response format:', response.data)
+      return { categories: [], total: 0 }
     } catch (error) {
       console.error('Failed to get categories:', error)
       this.handleApiError(error, 'Не удалось получить категории')
+      return { categories: [], total: 0 }
     }
   }
 
@@ -781,6 +836,140 @@ class ApiService {
     } catch (error) {
       console.error('Failed to generate QR code:', error)
       this.handleApiError(error, 'Не удалось сгенерировать QR-код')
+    }
+  }
+
+  // ===== БЛЮДА =====
+  
+  // Получение всех блюд
+  async getDishes(): Promise<Dish[]> {
+    try {
+      const response = await api.get('/dishes')
+      console.log('Raw dishes response:', response.data)
+      
+      // Проверяем структуру ответа
+      if (response.data && Array.isArray(response.data)) {
+        return response.data
+      } else if (response.data && response.data.dishes && Array.isArray(response.data.dishes)) {
+        return response.data.dishes
+      } else {
+        console.warn('Unexpected dishes response format:', response.data)
+        return []
+      }
+    } catch (error) {
+      console.error('Failed to get dishes:', error)
+      this.handleApiError(error, 'Не удалось получить блюда')
+      return []
+    }
+  }
+
+  // Получение блюда по ID
+  async getDish(id: number): Promise<Dish> {
+    try {
+      const response = await api.get(`/dishes/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get dish:', error)
+      this.handleApiError(error, 'Не удалось получить блюдо')
+      throw error
+    }
+  }
+
+  // Создание блюда
+  async createDish(dish: Partial<Dish>): Promise<Dish> {
+    try {
+      const response = await api.post('/dishes', dish)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create dish:', error)
+      this.handleApiError(error, 'Не удалось создать блюдо')
+      throw error
+    }
+  }
+
+  // Обновление блюда
+  async updateDish(id: number, dish: Partial<Dish>): Promise<Dish> {
+    try {
+      const response = await api.patch(`/dishes/${id}`, dish)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update dish:', error)
+      this.handleApiError(error, 'Не удалось обновить блюдо')
+      throw error
+    }
+  }
+
+  // Изменение доступности блюда
+  async updateDishAvailability(id: number, is_available: boolean): Promise<void> {
+    try {
+      await api.patch(`/dishes/${id}/availability`, { is_available })
+    } catch (error) {
+      console.error('Failed to update dish availability:', error)
+      this.handleApiError(error, 'Не удалось изменить доступность блюда')
+    }
+  }
+
+  // Удаление блюда
+  async deleteDish(id: number): Promise<void> {
+    try {
+      await api.delete(`/dishes/${id}`)
+    } catch (error) {
+      console.error('Failed to delete dish:', error)
+      this.handleApiError(error, 'Не удалось удалить блюдо')
+    }
+  }
+
+  // Получение вариаций блюда
+  async getDishVariations(dishId: number): Promise<DishVariation[]> {
+    try {
+      const response = await api.get(`/dishes/${dishId}/variations`)
+      return response.data || []
+    } catch (error) {
+      console.error('Failed to get dish variations:', error)
+      this.handleApiError(error, 'Не удалось получить вариации блюда')
+      return []
+    }
+  }
+
+  // Создание вариации блюда
+  async createDishVariation(dishId: number, variation: Partial<DishVariation>): Promise<DishVariation> {
+    try {
+      const response = await api.post(`/dishes/${dishId}/variations`, variation)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create dish variation:', error)
+      this.handleApiError(error, 'Не удалось создать вариацию блюда')
+    }
+  }
+
+  // Обновление вариации блюда
+  async updateDishVariation(dishId: number, variationId: number, variation: Partial<DishVariation>): Promise<DishVariation> {
+    try {
+      const response = await api.patch(`/dishes/${dishId}/variations/${variationId}`, variation)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update dish variation:', error)
+      this.handleApiError(error, 'Не удалось обновить вариацию блюда')
+    }
+  }
+
+  // Изменение доступности вариации блюда
+  async updateDishVariationAvailability(dishId: number, variationId: number, is_available: boolean): Promise<void> {
+    try {
+      await api.patch(`/dishes/${dishId}/variations/${variationId}/availability`, { is_available })
+    } catch (error) {
+      console.error('Failed to update dish variation availability:', error)
+      this.handleApiError(error, 'Не удалось изменить доступность вариации блюда')
+    }
+  }
+
+  // Удаление вариации блюда
+  async deleteDishVariation(dishId: number, variationId: number): Promise<void> {
+    try {
+      await api.delete(`/dishes/${dishId}/variations/${variationId}`)
+    } catch (error) {
+      console.error('Failed to delete dish variation:', error)
+      this.handleApiError(error, 'Не удалось удалить вариацию блюда')
     }
   }
 }

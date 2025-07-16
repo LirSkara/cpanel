@@ -161,7 +161,7 @@
                 <span class="feature-tag">Доступность</span>
               </div>
             </div>
-            <button class="action-btn danger">
+            <button @click="$router.push('/dishes')" class="action-btn danger">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>
