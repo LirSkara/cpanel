@@ -136,7 +136,7 @@
                 <span class="feature-tag">Сортировка</span>
               </div>
             </div>
-            <button class="action-btn warning">
+            <button @click="$router.push('/categories')" class="action-btn warning">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>

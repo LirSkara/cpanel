@@ -162,6 +162,53 @@ export interface LocationsResponse {
   total: number
 }
 
+export interface Category {
+  id: number
+  name: string
+  description: string | null
+  image_url: string | null
+  sort_order: number
+  is_active: boolean
+  color: string | null
+  featured: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateCategoryData {
+  name: string
+  description?: string
+  image_url?: string
+  sort_order?: number
+  is_active: boolean
+  color?: string
+  featured?: boolean
+}
+
+export interface UpdateCategoryData {
+  name?: string
+  description?: string
+  image_url?: string
+  sort_order?: number
+  is_active?: boolean
+  color?: string
+  featured?: boolean
+}
+
+export interface CategoriesResponse {
+  categories: Category[]
+  total: number
+}
+
+export interface CategoryDish {
+  id: number
+  name: string
+  description: string
+  is_available: boolean
+  main_image_url: string | null
+  category_id: number
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -655,6 +702,74 @@ class ApiService {
     } catch (error) {
       console.error('Failed to force table sync:', error)
       this.handleApiError(error, 'Не удалось принудительно синхронизировать столик')
+    }
+  }
+
+  // ===== КАТЕГОРИИ =====
+  
+  // Получение всех категорий
+  async getCategories(): Promise<CategoriesResponse> {
+    try {
+      const response = await api.get('/categories/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get categories:', error)
+      this.handleApiError(error, 'Не удалось получить категории')
+    }
+  }
+
+  // Получение категории по ID
+  async getCategoryById(id: number): Promise<Category> {
+    try {
+      const response = await api.get(`/categories/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get category:', error)
+      this.handleApiError(error, 'Не удалось получить категорию')
+    }
+  }
+
+  // Создание новой категории
+  async createCategory(categoryData: CreateCategoryData): Promise<Category> {
+    try {
+      const response = await api.post('/categories/', categoryData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create category:', error)
+      this.handleApiError(error, 'Не удалось создать категорию')
+    }
+  }
+
+  // Обновление категории
+  async updateCategory(id: number, categoryData: UpdateCategoryData): Promise<Category> {
+    try {
+      const response = await api.patch(`/categories/${id}`, categoryData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update category:', error)
+      this.handleApiError(error, 'Не удалось обновить категорию')
+    }
+  }
+
+  // Удаление категории
+  async deleteCategory(id: number): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/categories/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to delete category:', error)
+      this.handleApiError(error, 'Не удалось удалить категорию')
+    }
+  }
+
+  // Получение блюд категории
+  async getCategoryDishes(id: number): Promise<{ dishes: CategoryDish[] }> {
+    try {
+      const response = await api.get(`/categories/${id}/dishes`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get category dishes:', error)
+      this.handleApiError(error, 'Не удалось получить блюда категории')
     }
   }
 

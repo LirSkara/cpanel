@@ -69,6 +69,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/categories',
+      name: 'categories',
+      component: () => import('@/views/CategoriesManagementView.vue'),
+      meta: {
+        title: 'Управление категориями',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/template',
       name: 'template',
       component: () => import('@/views/TemplatePageView.vue'),
