@@ -273,7 +273,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex gap-2">
                   <button 
-                    class="btn btn-outline-success btn-sm" 
+                    class="btn btn-success btn-sm text-light" 
                     @click="toggleAvailability(dish)"
                     :class="{ 'btn-success': dish.is_available }"
                   >
@@ -650,7 +650,7 @@
                   <div class="mb-3">
                     <label class="form-label">Вес (г)</label>
                     <input 
-                      type="number" 
+                      type="number"
                       class="form-control" 
                       v-model="currentVariation.weight"
                       min="0"
