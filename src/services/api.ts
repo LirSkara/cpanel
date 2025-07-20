@@ -647,14 +647,15 @@ class ApiService {
     }
   }
 
-  // Получение статистики (для dashboard)
-  async getDashboardStats(): Promise<any> {
+  // Получение статистики дашборда
+  async getDashboardStats(): Promise<DashboardStats> {
     try {
       const response = await api.get('/dashboard/stats/')
-      return response.data.data // Возвращаем данные из поля data
+      return response.data
     } catch (error) {
       console.error('Failed to get dashboard stats:', error)
       this.handleApiError(error, 'Не удалось получить статистику')
+      throw error
     }
   }
 
@@ -1385,6 +1386,105 @@ class ApiService {
       throw error
     }
   }
+
+  // ===== АНАЛИТИКА =====
+
+  // Получение статистики кухонного цеха
+  async getKitchenDepartmentStats(department: string): Promise<KitchenDepartmentStats> {
+    try {
+      const response = await api.get(`/kitchen/departments/${department}/stats/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to load kitchen department stats:', error)
+      this.handleApiError(error, 'Не удалось загрузить статистику кухонного цеха')
+      throw error
+    }
+  }
+}
+
+// Интерфейсы для аналитики
+export interface DashboardStats {
+  orders: {
+    total: number
+    today: number
+    pending: number
+    completed: number
+    cancelled: number
+    revenue_today: number
+    revenue_total: number
+    average_order_value: number
+  }
+  dishes: {
+    total: number
+    available: number
+    popular: number
+    out_of_stock: number
+  }
+  tables: {
+    total: number
+    occupied: number
+    free: number
+    cleaning: number
+  }
+  users: {
+    total_waiters: number
+    active_waiters: number
+    total_kitchen: number
+    active_kitchen: number
+  }
+  performance: {
+    average_cooking_time: number
+    average_service_time: number
+    table_turnover_rate: number
+    peak_hours: string[]
+  }
+  top_dishes: Array<{
+    dish_id: number
+    dish_name: string
+    orders_count: number
+    revenue: number
+  }>
+  sales_by_hour: Array<{
+    hour: number
+    orders_count: number
+    revenue: number
+  }>
+  orders_by_type: {
+    dine_in: number
+    takeaway: number
+    delivery: number
+  }
+  payment_methods: Array<{
+    method_name: string
+    orders_count: number
+    revenue: number
+  }>
+}
+
+export interface KitchenDepartmentStats {
+  department: string
+  orders: {
+    total: number
+    pending: number
+    in_progress: number
+    completed: number
+    cancelled: number
+  }
+  performance: {
+    average_cooking_time: number
+    efficiency_rate: number
+    peak_hours: string[]
+  }
+  popular_dishes: Array<{
+    dish_id: number
+    dish_name: string
+    orders_count: number
+  }>
+  workload_by_hour: Array<{
+    hour: number
+    orders_count: number
+    average_time: number
+  }>
 }
 
 export const apiService = new ApiService()

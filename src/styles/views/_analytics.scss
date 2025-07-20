@@ -1,0 +1,323 @@
+// Стили для страницы аналитики
+.analytics-page {
+  .stats-card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(220, 53, 69, 0.15);
+    }
+
+    .stats-icon {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      
+      &.bg-primary {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+      }
+      
+      &.bg-success {
+        background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+      }
+      
+      &.bg-warning {
+        background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+      }
+      
+      &.bg-info {
+        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+      }
+    }
+  }
+
+  .card {
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      border-radius: 16px 16px 0 0;
+      padding: 1.25rem 1.5rem;
+
+      .card-title {
+        font-weight: 600;
+        color: #2c3e50;
+        
+        .bi {
+          color: #dc3545;
+        }
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  .chart-container {
+    position: relative;
+    background: rgba(248, 249, 250, 0.5);
+    border-radius: 12px;
+    padding: 1rem;
+    
+    canvas {
+      border-radius: 8px;
+      background: white;
+    }
+  }
+
+  .top-dish-item {
+    border-radius: 12px;
+    border: 1px solid rgba(222, 226, 230, 0.6);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(220, 53, 69, 0.05);
+      border-color: rgba(220, 53, 69, 0.2);
+      transform: translateX(4px);
+    }
+
+    .dish-rank .badge {
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+  }
+
+  .stat-item {
+    padding: 0.75rem;
+    border-radius: 12px;
+    background: rgba(248, 249, 250, 0.6);
+    border: 1px solid rgba(222, 226, 230, 0.4);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(220, 53, 69, 0.05);
+      border-color: rgba(220, 53, 69, 0.2);
+    }
+
+    .stat-value {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .order-types {
+    .d-flex {
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(248, 249, 250, 0.6);
+      border: 1px solid rgba(222, 226, 230, 0.4);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(220, 53, 69, 0.05);
+        border-color: rgba(220, 53, 69, 0.2);
+      }
+    }
+  }
+
+  .performance-metrics {
+    .metric-item {
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: rgba(248, 249, 250, 0.6);
+      border: 1px solid rgba(222, 226, 230, 0.4);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(220, 53, 69, 0.05);
+        border-color: rgba(220, 53, 69, 0.2);
+      }
+
+      .progress {
+        background: rgba(222, 226, 230, 0.3);
+        
+        .progress-bar {
+          &.bg-primary {
+            background: linear-gradient(90deg, #dc3545, #c82333) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .peak-hours {
+    .badge {
+      background: rgba(220, 53, 69, 0.1) !important;
+      color: #dc3545 !important;
+      border: 1px solid rgba(220, 53, 69, 0.2);
+      font-weight: 500;
+    }
+  }
+
+  .payment-method-card {
+    border-radius: 12px;
+    background: rgba(248, 249, 250, 0.8);
+    border: 1px solid rgba(222, 226, 230, 0.5);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(220, 53, 69, 0.05);
+      border-color: rgba(220, 53, 69, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.1);
+    }
+  }
+
+  // Улучшенные кнопки
+  .btn-primary {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      transform: none;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+    }
+  }
+
+  .btn-outline-secondary {
+    border-color: rgba(108, 117, 125, 0.3);
+    color: #6c757d;
+    border-radius: 10px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(108, 117, 125, 0.1);
+      border-color: rgba(108, 117, 125, 0.5);
+      transform: translateY(-2px);
+    }
+  }
+
+  // Breadcrumbs
+  .breadcrumb {
+    background: none;
+    padding: 0;
+
+    .breadcrumb-item {
+      &.active {
+        color: #6c757d;
+      }
+
+      a {
+        color: #495057;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: #dc3545;
+        }
+      }
+
+      &:not(:last-child)::before {
+        content: "›";
+        color: #dee2e6;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Спиннер загрузки
+  .spinner-border {
+    &.text-primary {
+      color: #dc3545 !important;
+    }
+  }
+}
+
+// Анимации
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.analytics-page {
+  .card {
+    animation: fadeInUp 0.6s ease-out;
+    
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.3s; }
+    &:nth-child(4) { animation-delay: 0.4s; }
+  }
+
+  .stats-card {
+    animation: fadeInUp 0.5s ease-out;
+    
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.2s; }
+    &:nth-child(4) { animation-delay: 0.25s; }
+  }
+}
+
+// Адаптивность
+@media (max-width: 992px) {
+  .analytics-page {
+    .chart-container {
+      height: 250px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-page {
+    .card-body {
+      padding: 1rem;
+    }
+
+    .stats-card .card-body {
+      padding: 1rem;
+    }
+
+    .chart-container {
+      height: 200px;
+      padding: 0.75rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .analytics-page {
+    .container-fluid {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    .card-header {
+      padding: 1rem;
+    }
+
+    .stats-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+  }
+}

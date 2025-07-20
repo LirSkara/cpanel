@@ -99,6 +99,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/analytics',
+      name: 'analytics',
+      component: () => import('@/views/AnalyticsView.vue'),
+      meta: {
+        title: 'Аналитика',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/ingredients',
       name: 'ingredients',
       component: () => import('@/views/IngredientsManagementView.vue'),

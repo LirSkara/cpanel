@@ -261,7 +261,7 @@
                 <span class="feature-tag">Графики</span>
               </div>
             </div>
-            <button class="action-btn info">
+            <button @click="$router.push('/analytics')" class="action-btn info">
               <i class="bi bi-arrow-right"></i>
               Просмотреть
             </button>
