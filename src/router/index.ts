@@ -89,6 +89,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('@/views/OrdersManagementView.vue'),
+      meta: {
+        title: 'Управление заказами',
+        requiresAuth: true,
+        requiresAdmin: true
+      }
+    },
+    {
       path: '/ingredients',
       name: 'ingredients',
       component: () => import('@/views/IngredientsManagementView.vue'),

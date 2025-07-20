@@ -262,6 +262,95 @@ export interface PaymentMethod {
   updated_at: string
 }
 
+// Интерфейсы для заказов
+export interface OrderItem {
+  id: number
+  order_id: number
+  dish_id: number
+  dish_name: string
+  quantity: number
+  unit_price: number
+  total_price: number
+  notes?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Order {
+  id: number
+  total_price: number
+  status: 'pending' | 'ready' | 'served' | 'dining' | 'completed' | 'cancelled'
+  payment_status: 'unpaid' | 'paid' | 'refunded'
+  order_type: 'dine_in' | 'takeaway' | 'delivery'
+  table_id: number | null
+  table_name?: string
+  waiter_id: number
+  waiter_name?: string
+  payment_method_id: number | null
+  payment_method_name?: string
+  customer_name?: string
+  customer_phone?: string
+  delivery_address?: string
+  delivery_notes?: string
+  served_at?: string
+  cancelled_at?: string
+  completed_at?: string
+  time_to_serve?: number
+  created_at: string
+  updated_at: string
+  items: OrderItem[]
+}
+
+export interface CreateOrderData {
+  table_id?: number
+  order_type: 'dine_in' | 'takeaway' | 'delivery'
+  customer_name?: string
+  customer_phone?: string
+  delivery_address?: string
+  delivery_notes?: string
+  items: {
+    dish_id: number
+    quantity: number
+    notes?: string
+  }[]
+}
+
+export interface UpdateOrderStatusData {
+  status: 'pending' | 'ready' | 'served' | 'dining' | 'completed' | 'cancelled'
+}
+
+export interface UpdateOrderPaymentData {
+  payment_status: 'unpaid' | 'paid' | 'refunded'
+  payment_method_id?: number
+}
+
+export interface CompletePaymentData {
+  payment_method_id: number
+  amount_paid: number
+}
+
+export interface OrdersResponse {
+  orders: Order[]
+  total: number
+  page: number
+  per_page: number
+}
+
+export interface OrderStats {
+  total_orders: number
+  pending_orders: number
+  completed_orders: number
+  cancelled_orders: number
+  total_revenue: number
+  average_order_value: number
+  orders_by_status: {
+    [key: string]: number
+  }
+  orders_by_type: {
+    [key: string]: number
+  }
+}
+
 class ApiService {
   private baseURL = 'http://localhost:8000'
 
@@ -1180,6 +1269,119 @@ class ApiService {
     } catch (error) {
       console.error('Failed to delete payment method:', error)
       this.handleApiError(error, 'Не удалось удалить способ оплаты')
+      throw error
+    }
+  }
+
+  // === МЕТОДЫ ДЛЯ РАБОТЫ С ЗАКАЗАМИ ===
+
+  // Получение всех заказов с пагинацией
+  async getOrders(page: number = 1, per_page: number = 20, status?: string, order_type?: string): Promise<OrdersResponse> {
+    try {
+      const params: any = { page, per_page }
+      if (status) params.status = status
+      if (order_type) params.order_type = order_type
+      
+      const response = await api.get('/orders/', { params })
+      return response.data
+    } catch (error) {
+      console.error('Failed to get orders:', error)
+      this.handleApiError(error, 'Не удалось получить заказы')
+      throw error
+    }
+  }
+
+  // Получение статистики заказов
+  async getOrdersStats(): Promise<OrderStats> {
+    try {
+      const response = await api.get('/orders/stats/summary/')
+      return response.data
+    } catch (error) {
+      console.error('Failed to get orders stats:', error)
+      this.handleApiError(error, 'Не удалось получить статистику заказов')
+      throw error
+    }
+  }
+
+  // Создание нового заказа
+  async createOrder(orderData: CreateOrderData): Promise<Order> {
+    try {
+      const response = await api.post('/orders/', orderData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create order:', error)
+      this.handleApiError(error, 'Не удалось создать заказ')
+      throw error
+    }
+  }
+
+  // Создание заказа с доставкой
+  async createDeliveryOrder(orderData: CreateOrderData): Promise<Order> {
+    try {
+      const response = await api.post('/orders/delivery/', orderData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to create delivery order:', error)
+      this.handleApiError(error, 'Не удалось создать заказ с доставкой')
+      throw error
+    }
+  }
+
+  // Получение заказа по ID
+  async getOrder(id: number): Promise<Order> {
+    try {
+      const response = await api.get(`/orders/${id}/`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to get order:', error)
+      this.handleApiError(error, 'Не удалось получить заказ')
+      throw error
+    }
+  }
+
+  // Обновление статуса заказа
+  async updateOrderStatus(id: number, statusData: UpdateOrderStatusData): Promise<Order> {
+    try {
+      const response = await api.patch(`/orders/${id}/status/`, statusData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update order status:', error)
+      this.handleApiError(error, 'Не удалось обновить статус заказа')
+      throw error
+    }
+  }
+
+  // Обновление статуса оплаты заказа
+  async updateOrderPayment(id: number, paymentData: UpdateOrderPaymentData): Promise<Order> {
+    try {
+      const response = await api.patch(`/orders/${id}/payment/`, paymentData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to update order payment:', error)
+      this.handleApiError(error, 'Не удалось обновить оплату заказа')
+      throw error
+    }
+  }
+
+  // Завершение оплаты заказа
+  async completeOrderPayment(id: number, paymentData: CompletePaymentData): Promise<Order> {
+    try {
+      const response = await api.post(`/orders/${id}/complete-payment/`, paymentData)
+      return response.data
+    } catch (error) {
+      console.error('Failed to complete order payment:', error)
+      this.handleApiError(error, 'Не удалось завершить оплату заказа')
+      throw error
+    }
+  }
+
+  // Удаление заказа
+  async deleteOrder(id: number): Promise<void> {
+    try {
+      await api.delete(`/orders/${id}/`)
+    } catch (error) {
+      console.error('Failed to delete order:', error)
+      this.handleApiError(error, 'Не удалось удалить заказ')
       throw error
     }
   }

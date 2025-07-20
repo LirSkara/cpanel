@@ -186,7 +186,7 @@
                 <span class="feature-tag">Отмена</span>
               </div>
             </div>
-            <button class="action-btn secondary">
+            <button @click="$router.push('/orders')" class="action-btn secondary">
               <i class="bi bi-arrow-right"></i>
               Управлять
             </button>
