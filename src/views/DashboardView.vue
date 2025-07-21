@@ -317,7 +317,18 @@ const handleLogout = async () => {
 const loadStats = async () => {
   try {
     const data = await apiService.getDashboardStats()
-    stats.value = data
+    // Преобразуем данные из API в формат, ожидаемый компонентом
+    stats.value = {
+      totalUsers: (data.users?.total_waiters || 0) + (data.users?.total_kitchen || 0),
+      totalOrders: data.orders?.total || 0,
+      totalRevenue: data.orders?.revenue_total || 0,
+      activeTables: data.tables?.occupied || 0,
+      totalLocations: 0, // TODO: Добавить в API
+      totalCategories: 0, // TODO: Добавить в API
+      totalDishes: data.dishes?.total || 0,
+      totalIngredients: 0, // TODO: Добавить в API
+      totalPaymentMethods: data.payment_methods?.length || 0
+    }
   } catch (error) {
     console.error('Failed to load stats:', error)
     // Оставляем нулевые значения в случае ошибки
