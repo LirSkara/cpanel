@@ -2,13 +2,18 @@ import axios from 'axios'
 
 // Создаем экземпляр axios с базовой конфигурацией
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://192.168.4.1:8000',
   timeout: 5000, // Таймаут 5 секунд
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 })
+
+// Логируем API URL в режиме разработки
+if (import.meta.env.DEV) {
+  console.log('🌐 API Base URL:', api.defaults.baseURL)
+}
 
 // Добавляем перехватчик ответов для лучшей обработки ошибок
 api.interceptors.response.use(
